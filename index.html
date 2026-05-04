@@ -355,6 +355,33 @@
       cursor: pointer;
     }
 
+    .url-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 112px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .url-row input {
+      min-width: 0;
+    }
+
+    .url-row button {
+      min-height: 38px;
+      padding: 9px 10px;
+      white-space: nowrap;
+    }
+
+    .helper-link {
+      font-size: 10.5px;
+      line-height: 1.32;
+      color: #64748B;
+    }
+
+    .helper-link b {
+      color: var(--ampm-dark);
+    }
+
     .upload-status {
       font-size: 11px;
       line-height: 1.35;
@@ -836,6 +863,16 @@
             <div id="uploadStatus" class="upload-status">Selecciona el Excel. Se usarán Caracteristicas, Link, Evaluacion Sitelo y Puntuacion Sitelo.</div>
           </div>
 
+          <div class="upload-box">
+            <div class="upload-title">Cargar cubo publicado <span>Default: Cubo_Sitelo.xlsx</span></div>
+            <div class="url-row">
+              <input id="cubeUrl" type="text" value="./Cubo_Sitelo.xlsx" placeholder="./Cubo_Sitelo.xlsx o link raw de GitHub" />
+              <button id="loadCubeBtn" class="secondary" type="button">Cargar cubo</button>
+            </div>
+            <div class="helper-link"><b>Tip:</b> si el HTML y el Excel están en la misma carpeta de GitHub Pages, usa una ruta relativa como <b>./Cubo_Sitelo.xlsx</b>.</div>
+            <div id="cubeStatus" class="upload-status">Ruta lista por default: ./Cubo_Sitelo.xlsx. Solo haz clic en “Cargar cubo”.</div>
+          </div>
+
           <div class="controls-grid">
             <input id="searchBox" type="search" placeholder="Buscar punto o coordenada..." />
             <select id="gradeFilter">
@@ -979,6 +1016,30 @@
       if (!el) return;
       el.textContent = message;
       el.className = `upload-status ${level}`.trim();
+    }
+
+    function setCubeStatus(message, level = "") {
+      const el = document.getElementById("cubeStatus");
+      if (!el) return;
+      el.textContent = message;
+      el.className = `upload-status ${level}`.trim();
+    }
+
+    function normalizeDataUrl(url) {
+      let value = String(url || "").trim();
+      if (!value) return "";
+
+      // Convierte enlaces tipo "github.com/usuario/repo/blob/rama/archivo.xlsx"
+      // a raw.githubusercontent.com para que el navegador pueda leer el Excel.
+      const githubBlob = value.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/i);
+      if (githubBlob) {
+        const [, user, repo, branch, filePath] = githubBlob;
+        return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${filePath}`;
+      }
+
+      // Convierte enlaces raw mal pegados con ?raw=true o espacios.
+      value = value.replace(/\?raw=true$/i, "");
+      return value;
     }
 
     function normalizeKey(value) {
@@ -1320,7 +1381,7 @@
       requestAnimationFrame(() => map?.invalidateSize(true));
     }
 
-    function loadRowsIntoMap(rows, sourceName = "Excel") {
+    function loadRowsIntoMap(rows, sourceName = "Excel", statusFn = setUploadStatus) {
       const extracted = [];
       let omitted = 0;
       rows.forEach((row, index) => {
@@ -1339,10 +1400,26 @@
       if (selectedId) selectPoint(selectedId, false);
       else renderNoSelection("No encontré coordenadas válidas en el Excel. Revisa que tenga columnas Latitud/Longitud, Coordenadas o links de Google Maps.");
 
+      const pdfCount = points.filter(p => p.pdfSitelo).length;
       const status = points.length
-        ? `${sourceName}: ${points.length} punto(s) cargados con evaluación, puntuación y PDF Sitelo. ${omitted ? `${omitted} fila(s) sin coordenadas fueron omitidas.` : "Todas las filas tenían coordenadas válidas."}`
+        ? `${sourceName}: ${points.length} punto(s) cargados con evaluación y puntuación Sitelo. ${pdfCount ? `${pdfCount} PDF(s) detectados.` : "Sin PDF detectado."} ${omitted ? `${omitted} fila(s) sin coordenadas fueron omitidas.` : "Todas las filas tenían coordenadas válidas."}`
         : `${sourceName}: no se pudieron cargar puntos válidos.`;
-      setUploadStatus(status, points.length ? (omitted ? "warn" : "ok") : "err");
+      statusFn(status, points.length ? (omitted ? "warn" : "ok") : "err");
+    }
+
+    function workbookToRows(workbook) {
+      let rows = [];
+      let sheetName = workbook.SheetNames[0] || "Hoja1";
+
+      for (const candidate of workbook.SheetNames) {
+        const sheetRows = worksheetToObjects(workbook.Sheets[candidate]);
+        if (sheetRows.length > rows.length) {
+          rows = sheetRows;
+          sheetName = candidate;
+        }
+      }
+
+      return { rows, sheetName };
     }
 
     async function handleExcelUpload(file) {
@@ -1357,16 +1434,7 @@
         const isCsv = /\.csv$/i.test(file.name);
         const data = isCsv ? await file.text() : await file.arrayBuffer();
         const workbook = XLSX.read(data, { type: isCsv ? "string" : "array" });
-        let rows = [];
-        let sheetName = workbook.SheetNames[0] || "Hoja1";
-
-        for (const candidate of workbook.SheetNames) {
-          const sheetRows = worksheetToObjects(workbook.Sheets[candidate]);
-          if (sheetRows.length > rows.length) {
-            rows = sheetRows;
-            sheetName = candidate;
-          }
-        }
+        const { rows, sheetName } = workbookToRows(workbook);
 
         if (!rows.length) {
           points = [];
@@ -1382,6 +1450,49 @@
       } catch (error) {
         console.error(error);
         setUploadStatus(`Error leyendo el Excel: ${error.message || error}`, "err");
+      }
+    }
+
+    async function handleCubeUrl() {
+      if (typeof XLSX === "undefined") {
+        setCubeStatus("No se pudo cargar la librería para leer Excel. Verifica conexión a internet y vuelve a abrir el HTML.", "err");
+        return;
+      }
+
+      const input = document.getElementById("cubeUrl");
+      const originalUrl = input?.value || "";
+      const url = normalizeDataUrl(originalUrl);
+
+      if (!url) {
+        setCubeStatus("Pega un link raw de GitHub o una ruta relativa del Excel, por ejemplo ./Cubo_Sitelo.xlsx.", "err");
+        return;
+      }
+
+      setCubeStatus(`Cargando cubo desde: ${url}`, "warn");
+
+      try {
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
+
+        const isCsv = /\.csv(?:\?|#|$)/i.test(url);
+        const data = isCsv ? await response.text() : await response.arrayBuffer();
+        const workbook = XLSX.read(data, { type: isCsv ? "string" : "array" });
+        const { rows, sheetName } = workbookToRows(workbook);
+
+        if (!rows.length) {
+          points = [];
+          selectedId = null;
+          refreshAll(false);
+          fitToPoints();
+          renderNoSelection("El cubo publicado no tiene filas para cargar.");
+          setCubeStatus("El cubo está vacío o no tiene datos visibles.", "err");
+          return;
+        }
+
+        loadRowsIntoMap(rows, `Cubo publicado · ${sheetName}`, setCubeStatus);
+      } catch (error) {
+        console.error(error);
+        setCubeStatus(`No pude cargar el cubo. Revisa que el archivo esté publicado, que el link sea raw/relativo y que no tenga restricciones CORS. Error: ${error.message || error}`, "err");
       }
     }
 
@@ -1758,6 +1869,11 @@
 
       document.getElementById("excelInput").addEventListener("change", e => {
         handleExcelUpload(e.target.files?.[0]);
+      });
+
+      document.getElementById("loadCubeBtn").addEventListener("click", handleCubeUrl);
+      document.getElementById("cubeUrl").addEventListener("keydown", e => {
+        if (e.key === "Enter") handleCubeUrl();
       });
 
       if (selectedId) selectPoint(selectedId, false);
