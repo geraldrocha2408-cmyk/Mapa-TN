@@ -811,35 +811,55 @@
     .grade-B { border-color: rgba(215,168,30,.38); background: rgba(215,168,30,.11); color: #996F00; }
     .grade-C { border-color: rgba(245,131,32,.38); background: rgba(245,131,32,.11); color: #B45309; }
 
-
     .competitor-box {
       border: 1px dashed #CBD5E1;
-      border-radius: 14px;
+      border-radius: 16px;
       background: #F8FAFC;
-      padding: 10px;
+      padding: 12px;
       margin-top: 10px;
+    }
+
+    .competitor-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      margin-bottom: 9px;
     }
 
     .competitor-title {
       font-size: 12px;
       font-weight: 1000;
       color: var(--ampm-dark);
-      margin-bottom: 8px;
       text-transform: uppercase;
       letter-spacing: .3px;
     }
 
-    .competitor-head {
-      display: grid;
-      grid-template-columns: 1fr 190px;
-      gap: 10px;
-      align-items: center;
+    .competitor-subtitle {
+      margin-top: 2px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .competitor-total {
+      min-width: 92px;
+      text-align: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      color: var(--ampm-blue);
+      font-size: 12px;
+      font-weight: 1000;
+      white-space: nowrap;
     }
 
     .competitor-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
+      margin-bottom: 9px;
     }
 
     .small-action {
@@ -856,31 +876,67 @@
       background: #FEF2F2;
     }
 
-    .competitor-legend {
-      display: flex;
-      flex-wrap: wrap;
+    .competitor-multi {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 7px;
-      margin-top: 8px;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 14px;
+      padding: 8px;
     }
 
-    .competitor-legend span {
-      display: inline-flex;
+    .competitor-multi label {
+      display: grid;
+      grid-template-columns: 15px 10px minmax(0, 1fr) auto;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       font-size: 11px;
       font-weight: 900;
-      color: #334155;
-      background: #FFFFFF;
+      color: var(--ampm-dark);
+      background: #F8FAFC;
       border: 1px solid #E2E8F0;
-      border-radius: 999px;
-      padding: 4px 7px;
+      border-radius: 12px;
+      padding: 7px 8px;
+      cursor: pointer;
     }
 
-    .competitor-legend i {
+    .competitor-multi label.is-active {
+      background: #FFFFFF;
+      border-color: #BFDBFE;
+      box-shadow: 0 6px 14px rgba(15,23,42,.06);
+    }
+
+    .competitor-multi input {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--ampm-blue);
+      cursor: pointer;
+    }
+
+    .brand-dot {
       width: 9px;
       height: 9px;
-      display: inline-block;
       border-radius: 999px;
+      display: inline-block;
+      box-shadow: 0 0 0 2px rgba(255,255,255,.85);
+    }
+
+    .brand-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .brand-count {
+      min-width: 24px;
+      text-align: center;
+      border-radius: 999px;
+      padding: 2px 6px;
+      background: #E2E8F0;
+      color: #334155;
+      font-size: 10px;
+      font-weight: 1000;
     }
 
     .competitor-pin {
@@ -953,7 +1009,7 @@
       .layout { padding: 8px; gap: 8px; }
       .topbar { padding: 12px; }
       .kpis { grid-template-columns: repeat(2, 1fr); }
-      .controls-grid, .button-row, .links-row, .form-grid, .competitor-head, .competitor-actions { grid-template-columns: 1fr; }
+      .controls-grid, .button-row, .links-row, .form-grid, .competitor-top, .competitor-actions, .competitor-multi { grid-template-columns: 1fr; }
       #map { min-height: 430px; }
     }
   </style>
@@ -967,7 +1023,7 @@
           <img class="logo" src="https://i.postimg.cc/W3cDbZ6k/Logo-Colores-Transparente.png" alt="AMPM" referrerpolicy="no-referrer" />
           <div>
             <h1>Mapa de expansión y evaluación de puntos</h1>
-            <div class="subtitle">Carga puntos desde cubo publicado · evaluación Sitelo fija · competencia visible · calles, zonas y áreas comerciales · perímetro 3 km con alertas A/B/C</div>
+            <div class="subtitle">Carga puntos desde cubo publicado · evaluación Sitelo fija · competencia visible · calles y zonas visibles · perímetro 3 km con alertas A/B/C</div>
           </div>
         </div>
 
@@ -1010,31 +1066,27 @@
             <span class="legend-item"><span class="dot b"></span>B · Opción media</span>
             <span class="legend-item"><span class="dot c"></span>C · Menor recomendación</span>
           </div>
-
           <div class="competitor-box">
-            <div class="competitor-title">Mostrar competencia</div>
-            <div class="competitor-head">
-              <div class="competitor-actions">
-                <button id="showAllCompetitorsBtn" class="secondary small-action" type="button">Poner todo</button>
-                <button id="hideAllCompetitorsBtn" class="secondary small-action danger" type="button">Quitar todo</button>
+            <div class="competitor-top">
+              <div>
+                <div class="competitor-title">Mostrar competencia</div>
+                <div class="competitor-subtitle">Selecciona una o varias marcas</div>
               </div>
-              <select id="competitorBrandFilter" aria-label="Filtrar competencia por marca">
-                <option value="ALL">Todas las competencias</option>
-                <option value="Road Market">Solo Road Market</option>
-                <option value="TenGo">Solo TenGo</option>
-                <option value="Super 7">Solo Super 7</option>
-                <option value="Pronto">Solo Pronto</option>
-                <option value="StarMart">Solo StarMart</option>
-                <option value="Shell Café">Solo Shell Café</option>
-              </select>
+              <div id="competitorCount" class="competitor-total">0 / 100 visibles</div>
             </div>
-            <div class="competitor-legend">
-              <span><i style="background:#7C3AED"></i>Road Market</span>
-              <span><i style="background:#0EA5E9"></i>TenGo</span>
-              <span><i style="background:#16A34A"></i>Super 7</span>
-              <span><i style="background:#DC2626"></i>Pronto</span>
-              <span><i style="background:#111827"></i>StarMart</span>
-              <span><i style="background:#F4B400"></i>Shell Café</span>
+
+            <div class="competitor-actions">
+              <button id="showAllCompetitorsBtn" class="secondary small-action" type="button">Poner todo</button>
+              <button id="hideAllCompetitorsBtn" class="secondary small-action danger" type="button">Quitar todo</button>
+            </div>
+
+            <div class="competitor-multi" id="competitorBrandFilter" aria-label="Filtrar una o varias competencias">
+              <label><input type="checkbox" value="Road Market" checked /><span class="brand-dot" style="background:#7C3AED"></span><span class="brand-name">Road Market</span><strong class="brand-count" data-brand-count="Road Market">40</strong></label>
+              <label><input type="checkbox" value="TenGo" checked /><span class="brand-dot" style="background:#0EA5E9"></span><span class="brand-name">TenGo</span><strong class="brand-count" data-brand-count="TenGo">6</strong></label>
+              <label><input type="checkbox" value="Super 7" checked /><span class="brand-dot" style="background:#16A34A"></span><span class="brand-name">Super 7</span><strong class="brand-count" data-brand-count="Super 7">29</strong></label>
+              <label><input type="checkbox" value="Pronto" checked /><span class="brand-dot" style="background:#DC2626"></span><span class="brand-name">Pronto</span><strong class="brand-count" data-brand-count="Pronto">10</strong></label>
+              <label><input type="checkbox" value="StarMart" checked /><span class="brand-dot" style="background:#111827"></span><span class="brand-name">StarMart</span><strong class="brand-count" data-brand-count="StarMart">9</strong></label>
+              <label><input type="checkbox" value="Shell Café" checked /><span class="brand-dot" style="background:#F4B400"></span><span class="brand-name">Shell Café</span><strong class="brand-count" data-brand-count="Shell Café">6</strong></label>
             </div>
           </div>
 
@@ -2009,141 +2061,21 @@
             "status": "Verificado",
             "source": "Google Maps compartido por usuario: Shell Cafe | Vía del Mar",
             "url": "https://www.google.com/maps/search/?api=1&query=13.6535625,-89.2802969"
+      },
+      {
+            "brand": "StarMart",
+            "name": "StarMart Masferrer",
+            "lat": 13.705482,
+            "lng": -89.249538,
+            "status": "Verificado",
+            "source": "Google Maps compartido por usuario: StarMart",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.705482,-89.249538"
       }
 ];
 
     const PERIMETER_KM = 3;
     const PERIMETER_M = PERIMETER_KM * 1000;
-
-
-    const COMMERCIAL_ZONE_STYLE = {
-      color: "#E8C957",
-      weight: 0.6,
-      opacity: 0.08,
-      fillColor: "#F8E7A6",
-      fillOpacity: 0.13,
-      interactive: false
-    };
-
-    // Overlay propio para simular las zonas amarillas comerciales tipo Google Maps.
-    // Son polígonos de referencia ejecutiva, no reemplazan validación inmobiliaria de campo.
-    const COMMERCIAL_ZONES = [
-      {
-        name: "Escalón / Masferrer",
-        coords: [
-          [13.7063, -89.2514],
-          [13.7058, -89.2385],
-          [13.6999, -89.2307],
-          [13.6942, -89.2375],
-          [13.6968, -89.2489]
-        ]
-      },
-      {
-        name: "Zona Rosa / San Benito",
-        coords: [
-          [13.6938, -89.2397],
-          [13.6952, -89.2321],
-          [13.6901, -89.2253],
-          [13.6843, -89.2302],
-          [13.6847, -89.2386],
-          [13.6892, -89.2415]
-        ]
-      },
-      {
-        name: "Salvador del Mundo / Centro Financiero",
-        coords: [
-          [13.7040, -89.2284],
-          [13.7055, -89.2204],
-          [13.7006, -89.2150],
-          [13.6959, -89.2192],
-          [13.6960, -89.2266],
-          [13.7000, -89.2299]
-        ]
-      },
-      {
-        name: "Metrocentro / Los Héroes",
-        coords: [
-          [13.7148, -89.2146],
-          [13.7142, -89.2026],
-          [13.7068, -89.1974],
-          [13.7001, -89.2040],
-          [13.7015, -89.2140],
-          [13.7079, -89.2186]
-        ]
-      },
-      {
-        name: "Colonia Médica / San Miguelito",
-        coords: [
-          [13.7192, -89.2058],
-          [13.7189, -89.1913],
-          [13.7118, -89.1874],
-          [13.7073, -89.1972],
-          [13.7105, -89.2050]
-        ]
-      },
-      {
-        name: "Centro Histórico",
-        coords: [
-          [13.7044, -89.1978],
-          [13.7045, -89.1787],
-          [13.6952, -89.1769],
-          [13.6915, -89.1882],
-          [13.6944, -89.1986]
-        ]
-      },
-      {
-        name: "Autopista Norte / 29 Calle",
-        coords: [
-          [13.7221, -89.1998],
-          [13.7227, -89.1901],
-          [13.7161, -89.1871],
-          [13.7134, -89.1966],
-          [13.7167, -89.2021]
-        ]
-      },
-      {
-        name: "Santa Tecla / Paseo El Carmen",
-        coords: [
-          [13.6813, -89.2935],
-          [13.6807, -89.2837],
-          [13.6725, -89.2827],
-          [13.6698, -89.2920],
-          [13.6740, -89.2983]
-        ]
-      },
-      {
-        name: "Santa Elena / La Gran Vía",
-        coords: [
-          [13.6819, -89.2626],
-          [13.6811, -89.2517],
-          [13.6733, -89.2496],
-          [13.6686, -89.2581],
-          [13.6728, -89.2672]
-        ]
-      },
-      {
-        name: "Merliot / Chiltiupán",
-        coords: [
-          [13.6827, -89.2795],
-          [13.6813, -89.2692],
-          [13.6740, -89.2685],
-          [13.6702, -89.2775],
-          [13.6752, -89.2843]
-        ]
-      },
-      {
-        name: "Soyapango / Plaza Mundo",
-        coords: [
-          [13.7046, -89.1549],
-          [13.7046, -89.1425],
-          [13.6956, -89.1408],
-          [13.6926, -89.1513],
-          [13.6972, -89.1581]
-        ]
-      }
-    ];
-
-    const GRADE_LABEL = {
+const GRADE_LABEL = {
       A: "A · Mejor opción",
       B: "B · Opción media",
       C: "C · Menor recomendación"
@@ -2152,7 +2084,7 @@
     let edits = loadEdits();
     let points = [];
 
-    let map, markersLayer, circlesLayer, competitorsLayer, commercialZonesLayer;
+    let map, markersLayer, circlesLayer, competitorsLayer;
     let markers = new Map();
     let circles = new Map();
     let showRadius = true;
@@ -2722,12 +2654,10 @@
         attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
       }).addTo(map);
 
-      commercialZonesLayer = L.layerGroup().addTo(map);
       markersLayer = L.layerGroup().addTo(map);
       circlesLayer = L.layerGroup().addTo(map);
       competitorsLayer = L.layerGroup().addTo(map);
 
-      renderCommercialZones();
       renderMapObjects();
       renderCompetitorObjects();
       map.setView([13.6929, -89.2182], 12);
@@ -2821,26 +2751,42 @@
       `;
     }
 
-    function getFilteredCompetitors() {
-      if (!showCompetitors) return [];
-      const brandFilter = document.getElementById("competitorBrandFilter")?.value || "ALL";
-      // Siempre muestra TODOS los puntos de competencia cargados.
-      // El filtro solo limita por marca; no oculta puntos "Aprox.".
-      return COMPETITOR_POINTS.filter(p => brandFilter === "ALL" || p.brand === brandFilter);
+    function getSelectedCompetitorBrands() {
+      return Array.from(document.querySelectorAll("#competitorBrandFilter input[type='checkbox']:checked"))
+        .map(input => input.value);
     }
 
-
-    function renderCommercialZones() {
-      if (!commercialZonesLayer) return;
-      commercialZonesLayer.clearLayers();
-
-      COMMERCIAL_ZONES.forEach(zone => {
-        const polygon = L.polygon(zone.coords, COMMERCIAL_ZONE_STYLE);
-        commercialZonesLayer.addLayer(polygon);
+    function setAllCompetitorBrands(checked) {
+      document.querySelectorAll("#competitorBrandFilter input[type='checkbox']").forEach(input => {
+        input.checked = checked;
+        input.closest("label")?.classList.toggle("is-active", checked);
       });
     }
 
-    function renderCompetitorObjects() {
+    function updateCompetitorFilterCounts() {
+      const totals = COMPETITOR_POINTS.reduce((acc, p) => {
+        acc[p.brand] = (acc[p.brand] || 0) + 1;
+        return acc;
+      }, {});
+
+      document.querySelectorAll("[data-brand-count]").forEach(el => {
+        const brand = el.getAttribute("data-brand-count");
+        el.textContent = totals[brand] || 0;
+      });
+
+      document.querySelectorAll("#competitorBrandFilter label").forEach(label => {
+        const input = label.querySelector("input[type='checkbox']");
+        label.classList.toggle("is-active", !!input?.checked);
+      });
+    }
+
+    function getFilteredCompetitors() {
+      if (!showCompetitors) return [];
+      const selectedBrands = getSelectedCompetitorBrands();
+      if (!selectedBrands.length) return [];
+      return COMPETITOR_POINTS.filter(p => selectedBrands.includes(p.brand));
+    }
+function renderCompetitorObjects() {
       if (!competitorsLayer) return;
       competitorsLayer.clearLayers();
       const competitors = getFilteredCompetitors();
@@ -3126,6 +3072,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       initMap();
+      updateCompetitorFilterCounts();
       renderKpis();
       renderTable();
       renderNoSelection();
@@ -3148,18 +3095,22 @@ document.getElementById("loadCubeBtn").addEventListener("click", handleCubeUrl);
 
       document.getElementById("showAllCompetitorsBtn").addEventListener("click", () => {
         showCompetitors = true;
-        document.getElementById("competitorBrandFilter").value = "ALL";
+        setAllCompetitorBrands(true);
         renderCompetitorObjects();
       });
 
       document.getElementById("hideAllCompetitorsBtn").addEventListener("click", () => {
         showCompetitors = false;
+        setAllCompetitorBrands(false);
         renderCompetitorObjects();
       });
 
-      document.getElementById("competitorBrandFilter").addEventListener("change", () => {
-        showCompetitors = true;
-        renderCompetitorObjects();
+      document.querySelectorAll("#competitorBrandFilter input[type='checkbox']").forEach(input => {
+        input.addEventListener("change", () => {
+          showCompetitors = getSelectedCompetitorBrands().length > 0;
+          updateCompetitorFilterCounts();
+          renderCompetitorObjects();
+        });
       });
 
       document.getElementById("toggleRadiusBtn").addEventListener("click", () => {
