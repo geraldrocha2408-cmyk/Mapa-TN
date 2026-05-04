@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mapa de Expansión AMPM | Puntos + Perímetro 3 km</title>
+
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIINfQdgyNcBpp3cBmo5CaoBBD9TuIAa8N8=" crossorigin="" />
+
+  <style>
+
+    /* ==========================================================
+       Leaflet CSS embebido - FIX crítico para abrir como archivo local
+       Si el navegador no carga el CSS externo de Leaflet, los tiles del mapa
+       se apilan y se ve como un mosaico desordenado. Estas reglas fuerzan
+       la posición correcta de capas, tiles, controles, marcadores y popups.
+       ========================================================== */
+    .leaflet-container {
+      overflow: hidden;
+      position: relative;
+      outline-style: none;
+      background: #dbeafe;
+      font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .leaflet-pane,
+    .leaflet-tile,
+    .leaflet-marker-icon,
+    .leaflet-marker-shadow,
+    .leaflet-tile-container,
+    .leaflet-pane > svg,
+    .leaflet-pane > canvas,
+    .leaflet-zoom-box,
+    .leaflet-image-layer,
+    .leaflet-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .leaflet-container img,
+    .leaflet-container canvas,
+    .leaflet-container svg {
+      max-width: none !important;
+      max-height: none !important;
+      box-sizing: content-box;
+    }
+    .leaflet-container img.leaflet-image-layer,
+    .leaflet-container .leaflet-tile {
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .leaflet-tile { filter: inherit; visibility: inherit; border: 0; }
+    .leaflet-tile-container { pointer-events: none; }
+    .leaflet-marker-icon,
+    .leaflet-marker-shadow { display: block; }
+    .leaflet-map-pane canvas { z-index: 100; }
+    .leaflet-map-pane svg { z-index: 200; }
+    .leaflet-tile-pane { z-index: 200; }
+    .leaflet-overlay-pane { z-index: 400; }
+    .leaflet-shadow-pane { z-index: 500; }
+    .leaflet-marker-pane { z-index: 600; }
+    .leaflet-tooltip-pane { z-index: 650; }
+    .leaflet-popup-pane { z-index: 700; }
+    .leaflet-map-pane { z-index: 400; }
+    .leaflet-vml-shape { width: 1px; height: 1px; }
+    .lvml { behavior: url(#default#VML); display: inline-block; position: absolute; }
+    .leaflet-control { position: relative; z-index: 800; pointer-events: auto; }
+    .leaflet-top,
+    .leaflet-bottom { position: absolute; z-index: 1000; pointer-events: none; }
+    .leaflet-top { top: 0; }
+    .leaflet-right { right: 0; }
+    .leaflet-bottom { bottom: 0; }
+    .leaflet-left { left: 0; }
+    .leaflet-control { float: left; clear: both; }
+    .leaflet-right .leaflet-control { float: right; }
+    .leaflet-top .leaflet-control { margin-top: 10px; }
+    .leaflet-bottom .leaflet-control { margin-bottom: 10px; }
+    .leaflet-left .leaflet-control { margin-left: 10px; }
+    .leaflet-right .leaflet-control { margin-right: 10px; }
+    .leaflet-fade-anim .leaflet-popup { opacity: 0; transition: opacity .2s linear; }
+    .leaflet-fade-anim .leaflet-map-pane .leaflet-popup { opacity: 1; }
+    .leaflet-zoom-animated { transform-origin: 0 0; }
+    .leaflet-zoom-anim .leaflet-zoom-animated { transition: transform .25s cubic-bezier(0,0,.25,1); }
+    .leaflet-zoom-anim .leaflet-tile,
+    .leaflet-pan-anim .leaflet-tile { transition: none; }
+    .leaflet-interactive { cursor: pointer; }
+    .leaflet-grab { cursor: grab; }
+    .leaflet-dragging .leaflet-grab { cursor: move; cursor: grabbing; }
+    .leaflet-control-zoom { border-radius: 10px; overflow: hidden; box-shadow: 0 8px 22px rgba(17,40,74,.15); }
+    .leaflet-bar a,
+    .leaflet-bar a:hover {
+      background-color: #fff;
+      border-bottom: 1px solid #cbd5e1;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      color: #11284A;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .leaflet-bar a:hover { background-color: #f8fafc; }
+    .leaflet-bar a:first-child { border-top-left-radius: 10px; border-top-right-radius: 10px; }
+    .leaflet-bar a:last-child { border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; border-bottom: none; }
+    .leaflet-control-attribution {
+      background: rgba(255,255,255,.82);
+      padding: 2px 6px;
+      font-size: 10px;
+      color: #334155;
+      border-radius: 8px 0 0 0;
+    }
+    .leaflet-control-attribution a { color: #005EA7; text-decoration: none; }
+    .leaflet-popup { position: absolute; text-align: center; margin-bottom: 20px; }
+    .leaflet-popup-content-wrapper {
+      padding: 1px;
+      text-align: left;
+      border-radius: 14px;
+      box-shadow: 0 14px 30px rgba(15,23,42,.18);
+      background: #fff;
+    }
+    .leaflet-popup-content { margin: 12px 14px; line-height: 1.35; min-width: 220px; }
+    .leaflet-popup-tip-container {
+      width: 40px;
+      height: 20px;
+      position: absolute;
+      left: 50%;
+      margin-left: -20px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .leaflet-popup-tip {
+      width: 17px;
+      height: 17px;
+      padding: 1px;
+      margin: -10px auto 0;
+      transform: rotate(45deg);
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(15,23,42,.18);
+    }
+    .leaflet-popup-close-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      border: none;
+      text-align: center;
+      width: 28px;
+      height: 28px;
+      font: 18px/28px Tahoma, Verdana, sans-serif;
+      color: #64748B;
+      text-decoration: none;
+      background: transparent;
+    }
+    .leaflet-popup-close-button:hover { color: #11284A; }
+
+    :root {
+      --ampm-blue:#005EA7;
+      --ampm-blue-2:#0C4D8F;
+      --ampm-dark:#11284A;
+      --ampm-orange:#F58320;
+      --ampm-orange-2:#FAA21E;
+      --bg:#F4F7FB;
+      --card:#FFFFFF;
+      --text:#0F172A;
+      --muted:#64748B;
+      --line:#E2E8F0;
+      --a:#12A05C;
+      --b:#D7A81E;
+      --c:#F58320;
+      --shadow: 0 16px 35px rgba(17, 40, 74, .12);
+      --shadow-soft: 0 8px 22px rgba(17, 40, 74, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: var(--bg); }
+    body { overflow: hidden; }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      padding: 16px 20px;
+      background:
+        radial-gradient(circle at top left, rgba(250,162,30,.32), transparent 34%),
+        linear-gradient(135deg, var(--ampm-dark), var(--ampm-blue) 65%, #006EBB);
+      color: white;
+      box-shadow: var(--shadow);
+      position: relative;
+      z-index: 10;
+    }
+
+    .topbar-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: white;
+      color: var(--ampm-blue);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+      letter-spacing: -.6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.1;
+      letter-spacing: -.35px;
+    }
+
+    .subtitle {
+      margin-top: 5px;
+      font-size: 13px;
+      color: rgba(255,255,255,.84);
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(74px, 1fr));
+      gap: 10px;
+    }
+
+    .kpi {
+      min-width: 74px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 14px;
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(8px);
+      padding: 9px 12px;
+      text-align: center;
+    }
+
+    .kpi strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .kpi span {
+      font-size: 11px;
+      color: rgba(255,255,255,.78);
+    }
+
+    .layout {
+      min-height: 0;
+      height: calc(100vh - 104px);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(420px, 1fr) 450px;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    #map {
+      min-height: 0;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(17,40,74,.08);
+      background: #DBEAFE;
+    }
+
+    .panel {
+      min-height: 0;
+      height: 100%;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 6px;
+      padding-bottom: 16px;
+      scroll-behavior: smooth;
+      overscroll-behavior: contain;
+    }
+
+    .panel::-webkit-scrollbar,
+    .table-wrap::-webkit-scrollbar { width: 9px; height: 9px; }
+    .panel::-webkit-scrollbar-thumb,
+    .table-wrap::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
+    .panel::-webkit-scrollbar-track,
+    .table-wrap::-webkit-scrollbar-track { background: #F1F5F9; border-radius: 999px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .controls {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 132px;
+      gap: 9px;
+    }
+
+    .upload-box {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border: 1px dashed #BFDBFE;
+      background: linear-gradient(180deg, #F8FBFF, #FFFFFF);
+      border-radius: 16px;
+    }
+
+    .upload-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--ampm-dark);
+    }
+
+    .upload-title span {
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .upload-box input[type="file"] {
+      border-style: solid;
+      background: #FFFFFF;
+      cursor: pointer;
+    }
+
+    .upload-status {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #475569;
+    }
+
+    .upload-status.ok { color: #166534; font-weight: 800; }
+    .upload-status.warn { color: #B45309; font-weight: 800; }
+    .upload-status.err { color: #B91C1C; font-weight: 800; }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 10px 11px;
+      font-size: 13px;
+      background: #fff;
+      outline: none;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--ampm-blue);
+      box-shadow: 0 0 0 3px rgba(0,94,167,.12);
+    }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-weight: 650;
+      color: #334155;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .dot.a { background: var(--a); }
+    .dot.b { background: var(--b); }
+    .dot.c { background: var(--c); }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    button, .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      background: var(--ampm-blue);
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      transition: transform .16s ease, opacity .16s ease, box-shadow .16s ease;
+      box-shadow: 0 9px 18px rgba(0,94,167,.18);
+    }
+
+    button:hover, .btn:hover { transform: translateY(-1px); opacity: .95; }
+    button.secondary { background: #EFF6FF; color: var(--ampm-blue); box-shadow: none; border: 1px solid #BFDBFE; }
+    button.orange { background: var(--ampm-orange); box-shadow: 0 9px 18px rgba(245,131,32,.22); }
+    button.ghost { background: #F8FAFC; color: #334155; box-shadow: none; border: 1px solid var(--line); }
+
+    .selected-card {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .selected-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .selected-title h2 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.18;
+      color: var(--ampm-dark);
+    }
+
+    .meta-line {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 98px 1fr;
+      gap: 9px;
+      align-items: center;
+    }
+
+    .form-grid label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #475569;
+    }
+
+    .links-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 9px;
+    }
+
+    .table-wrap {
+      min-height: 260px;
+      max-height: 420px;
+      overflow: auto;
+      border-radius: 20px;
+      flex: 0 0 auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12px;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #F8FAFC;
+      color: #334155;
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+
+    tbody td {
+      padding: 8px;
+      border-bottom: 1px solid #EEF2F7;
+      vertical-align: top;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      background: #fff;
+    }
+
+    tbody tr:hover { background: #F8FAFC; }
+    tbody tr.active { background: #EFF6FF; }
+
+    .name-cell {
+      font-weight: 800;
+      color: var(--ampm-dark);
+    }
+
+    .small {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .hint {
+      margin-top: 2px;
+      font-size: 11px;
+      color: #475569;
+      background: #F8FAFC;
+      border: 1px dashed #CBD5E1;
+      border-radius: 12px;
+      padding: 8px 10px;
+      line-height: 1.35;
+    }
+
+    .zone-alert, .safe-alert {
+      border-radius: 14px;
+      padding: 9px 10px;
+      font-size: 12px;
+      line-height: 1.35;
+      margin-top: 7px;
+    }
+
+    .zone-alert {
+      background: #FFF7ED;
+      border: 1px solid #FDBA74;
+      color: #9A3412;
+    }
+
+    .safe-alert {
+      background: #ECFDF5;
+      border: 1px solid #86EFAC;
+      color: #166534;
+    }
+
+    .nearby-list {
+      display: grid;
+      gap: 5px;
+      margin-top: 7px;
+    }
+
+    .nearby-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 5px 7px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(251,146,60,.36);
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    #nearbyInfo {
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    #nearbyInfo::-webkit-scrollbar { width: 8px; }
+    #nearbyInfo::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
+    #nearbyInfo::-webkit-scrollbar-track { background: #F8FAFC; border-radius: 999px; }
+
+    .leaflet-tooltip {
+      position: absolute;
+      padding: 4px 8px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(15,23,42,.14);
+      border-radius: 999px;
+      color: var(--ampm-dark);
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 900;
+      box-shadow: 0 7px 18px rgba(15,23,42,.18);
+      pointer-events: none;
+    }
+
+    .leaflet-tooltip.point-label {
+      letter-spacing: -.1px;
+      transform: translateY(-1px);
+      border-left: 4px solid var(--ampm-orange);
+    }
+
+
+    .alert-pill, .ok-pill {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      margin-top: 4px;
+    }
+
+    .alert-pill { background: #FFEDD5; color: #C2410C; border: 1px solid #FDBA74; }
+    .ok-pill { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
+    tbody tr.risk-overlap { background: #FFFBEB; }
+    tbody tr.risk-overlap:hover { background: #FEF3C7; }
+    tbody tr.active.risk-overlap { background: #EFF6FF; }
+    .marker-pin.selected {
+      box-shadow: 0 0 0 5px rgba(0,94,167,.22), 0 7px 20px rgba(0,0,0,.34);
+      border-color: #FFFFFF;
+    }
+
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 30px;
+      height: 26px;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: white;
+      font-weight: 900;
+      box-shadow: 0 6px 12px rgba(15,23,42,.14);
+    }
+
+    .badge.A { background: var(--a); }
+    .badge.B { background: var(--b); }
+    .badge.C { background: var(--c); }
+
+    .grade-select {
+      padding: 7px;
+      min-width: 62px;
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    .sitelo-mini {
+      min-width: 142px;
+      padding: 7px;
+      border-radius: 10px;
+    }
+
+    .marker-pin {
+      width: 31px;
+      height: 31px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 3px solid white;
+      box-shadow: 0 5px 16px rgba(0,0,0,.32);
+      position: relative;
+    }
+
+    .marker-pin span {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 13px;
+      font-weight: 950;
+      transform: rotate(45deg);
+      text-shadow: 0 1px 2px rgba(0,0,0,.28);
+    }
+
+    .marker-pin.A { background: var(--a); }
+    .marker-pin.B { background: var(--b); }
+    .marker-pin.C { background: var(--c); }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .popup h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      color: var(--ampm-dark);
+    }
+
+    .popup p { margin: 4px 0; font-size: 12px; color: #475569; }
+    .popup .popup-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 6px; margin-top: 10px; }
+    .popup a, .popup button { font-size: 11px; padding: 8px; border-radius: 10px; }
+
+    .distance-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      border-radius: 999px;
+      color: #334155;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .empty {
+      padding: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .readonly-pill,
+    .readonly-score {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 13px;
+      border: 1px solid #D8E1EE;
+      background: #F8FAFC;
+      color: var(--ampm-dark);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .readonly-score {
+      font-size: 18px;
+      justify-content: center;
+      background: linear-gradient(135deg, #F8FAFC, #EFF6FF);
+    }
+
+    .grade-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: white;
+      font-weight: 950;
+      box-shadow: 0 8px 18px rgba(17,40,74,.14);
+    }
+
+    .score-mini {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 52px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #F1F5F9;
+      border: 1px solid #D8E1EE;
+      color: var(--ampm-dark);
+      font-weight: 900;
+    }
+
+    .grade-A { border-color: rgba(18,160,92,.35); background: rgba(18,160,92,.09); color: #0F7A49; }
+    .grade-B { border-color: rgba(215,168,30,.38); background: rgba(215,168,30,.11); color: #996F00; }
+    .grade-C { border-color: rgba(245,131,32,.38); background: rgba(245,131,32,.11); color: #B45309; }
+
+    @media (max-width: 1120px) {
+      body { overflow: auto; }
+      .app { min-height: 100vh; height: auto; }
+      .topbar-inner { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
+      #map { height: 62vh; min-height: 470px; }
+      .panel { overflow: visible; max-height: none; padding-right: 0; }
+      .table-wrap { max-height: 520px; }
+    }
+
+    @media (max-width: 640px) {
+      .layout { padding: 8px; gap: 8px; }
+      .topbar { padding: 12px; }
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+      .controls-grid, .button-row, .links-row, .form-grid { grid-template-columns: 1fr; }
+      #map { min-height: 430px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="logo">AMPM</div>
+          <div>
+            <h1>Mapa de expansión y evaluación de puntos</h1>
+            <div class="subtitle">Carga puntos desde Excel · evaluación Sitelo fija · puntuación visible · PDF visualizable · perímetro 3 km con alertas A/B/C</div>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><strong id="kpiTotal">0</strong><span>Total puntos</span></div>
+          <div class="kpi"><strong id="kpiA">0</strong><span>Nota A</span></div>
+          <div class="kpi"><strong id="kpiB">0</strong><span>Nota B</span></div>
+          <div class="kpi"><strong id="kpiC">0</strong><span>Nota C</span></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="layout">
+      <div id="map" aria-label="Mapa con puntos y perímetro seleccionado de 3 kilómetros"></div>
+
+      <aside class="panel">
+        <section class="card controls">
+          <div class="upload-box">
+            <div class="upload-title">Subir Excel de puntos <span>No se carga nada automáticamente</span></div>
+            <input id="excelInput" type="file" accept=".xlsx,.xls,.csv" />
+            <div id="uploadStatus" class="upload-status">Selecciona el Excel. Se usarán Caracteristicas, Link, Evaluacion Sitelo y Puntuacion Sitelo.</div>
+          </div>
+
+          <div class="controls-grid">
+            <input id="searchBox" type="search" placeholder="Buscar punto o coordenada..." />
+            <select id="gradeFilter">
+              <option value="ALL">Todas las notas</option>
+              <option value="A">Solo A · mejor opción</option>
+              <option value="B">Solo B · opción media</option>
+              <option value="C">Solo C · menor prioridad</option>
+            </select>
+          </div>
+
+          <div class="legend">
+            <span class="legend-item"><span class="dot a"></span>A · Mejor opción</span>
+            <span class="legend-item"><span class="dot b"></span>B · Opción media</span>
+            <span class="legend-item"><span class="dot c"></span>C · Menor recomendación</span>
+          </div>
+
+          <div class="button-row">
+            <button id="toggleRadiusBtn" class="secondary" type="button">Ocultar perímetro seleccionado 3 km</button>
+            <button id="exportBtn" class="orange" type="button">Exportar evaluación CSV</button>
+          </div>
+          <div class="hint">Primero sube el Excel. Cada pin mostrará su nombre, evaluación Sitelo, puntuación y PDF; al hacer clic se muestra solo su perímetro de 3 km y la alerta si cae en zona de otro punto.</div>
+        </section>
+
+        <section class="card selected-card" id="selectedCard">
+          <div class="selected-title">
+            <div>
+              <h2 id="selectedName">Selecciona un punto</h2>
+              <div class="meta-line" id="selectedMeta">Haz clic en un pin o en una fila para ver la evaluación Sitelo.</div>
+            </div>
+            <span id="selectedBadge" class="badge B">B</span>
+          </div>
+
+          <div class="form-grid">
+            <label>Evaluación Sitelo</label>
+            <div id="selectedGradeDisplay" class="readonly-pill grade-B">B · Opción media</div>
+
+            <label>Puntuación Sitelo</label>
+            <div id="selectedScoreDisplay" class="readonly-score">—</div>
+
+            <label for="selectedSitelo">Link Sitelo</label>
+            <input id="selectedSitelo" type="text" placeholder="Pega aquí el link del punto en Sitelo" />
+
+            <label for="selectedComment">Comentario</label>
+            <textarea id="selectedComment" placeholder="Ej.: alto tráfico, parqueo limitado, competencia cercana, zona 24/7, etc."></textarea>
+          </div>
+
+          <div class="links-row">
+            <a id="googleLink" class="btn" href="#" target="_blank" rel="noopener">Abrir Google Maps</a>
+            <a id="pdfLink" class="btn secondary" href="#" target="_blank" rel="noopener">Ver PDF Drive</a>
+          </div>
+
+          <div class="small" id="nearbyInfo">Sube el Excel y selecciona un punto para calcular cercanía y perímetro.</div>
+        </section>
+
+        <section class="card table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:38%">Punto</th>
+                <th style="width:18%">Evaluación</th>
+                <th style="width:16%">Puntuación ↓</th>
+                <th style="width:28%">Cercanía</th>
+              </tr>
+            </thead>
+            <tbody id="pointsTable"></tbody>
+          </table>
+          <div id="emptyState" class="empty" style="display:none;">No hay puntos con esos filtros.</div>
+        </section>
+      </aside>
+    </section>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <script>
+    const BASE_POINTS = [];
+
+    const STORAGE_KEY = "ampmExpansionSiteloComentariosV2";
+
+    const COLORS = {
+      A: "#12A05C",
+      B: "#D7A81E",
+      C: "#F58320"
+    };
+
+    const PERIMETER_KM = 3;
+    const PERIMETER_M = PERIMETER_KM * 1000;
+
+    const GRADE_LABEL = {
+      A: "A · Mejor opción",
+      B: "B · Opción media",
+      C: "C · Menor recomendación"
+    };
+
+    let edits = loadEdits();
+    let points = [];
+
+    let map, markersLayer, circlesLayer;
+    let markers = new Map();
+    let circles = new Map();
+    let showRadius = true;
+    let selectedId = null;
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[ch]));
+    }
+
+    function attr(value) {
+      return escapeHTML(value).replace(/\n/g, " ");
+    }
+
+    function loadEdits() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function persistPoint(point) {
+      // La evaluación y puntuación vienen del Excel y quedan bloqueadas.
+      // Solo se guardan link Sitelo y comentario local.
+      edits[point.id] = {
+        sitelo: point.sitelo || "",
+        comentario: point.comentario || ""
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+    }
+
+
+    function setUploadStatus(message, level = "") {
+      const el = document.getElementById("uploadStatus");
+      if (!el) return;
+      el.textContent = message;
+      el.className = `upload-status ${level}`.trim();
+    }
+
+    function normalizeKey(value) {
+      return String(value ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+    }
+
+    function getRowValue(row, aliases) {
+      const keys = Object.keys(row || {});
+      const wanted = aliases.map(normalizeKey);
+      for (const key of keys) {
+        const nk = normalizeKey(key);
+        if (wanted.some(w => nk === w || nk.includes(w) || w.includes(nk))) return row[key];
+      }
+      return "";
+    }
+
+    function getRowValueStrict(row, aliases) {
+      const keys = Object.keys(row || {});
+      const wanted = aliases.map(normalizeKey);
+      for (const key of keys) {
+        const nk = normalizeKey(key);
+        // Estricto: permite que "Link PDF Sitelo" matchee "link pdf",
+        // pero NO permite que la columna genérica "Link" matchee "Link PDF Sitelo".
+        if (wanted.some(w => nk === w || nk.includes(w))) return row[key];
+      }
+      return "";
+    }
+
+    function isGoogleMapsUrl(value) {
+      const s = String(value || "").trim();
+      return /(?:google\.[^/]+\/maps|maps\.app\.goo\.gl|goo\.gl\/maps|maps\/place|maps\/search)/i.test(s);
+    }
+
+    function normalizePdfUrl(value) {
+      let s = String(value || "").trim();
+      if (!/^https?:\/\//i.test(s)) return "";
+      if (isGoogleMapsUrl(s)) return "";
+
+      // Convierte links compartidos de Google Drive a vista previa.
+      // Ej.: https://drive.google.com/file/d/ID/view?... -> /preview
+      let id = "";
+      let m = s.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+      if (m) id = m[1];
+
+      if (!id) {
+        m = s.match(/[?&]id=([^&#]+)/i);
+        if (m && /drive\.google\.com/i.test(s)) id = m[1];
+      }
+
+      if (id) return `https://drive.google.com/file/d/${id}/preview`;
+
+      return s;
+    }
+
+    function safeDecode(value) {
+      const s = String(value ?? "");
+      try { return decodeURIComponent(s); } catch (e) { return s; }
+    }
+
+    function parseNumber(value) {
+      if (typeof value === "number") return Number.isFinite(value) ? value : NaN;
+      let s = String(value ?? "").trim();
+      if (!s) return NaN;
+      s = s.replace(/\s+/g, "");
+      if (s.includes(",") && !s.includes(".")) s = s.replace(",", ".");
+      const n = Number.parseFloat(s);
+      return Number.isFinite(n) ? n : NaN;
+    }
+
+    function validLatLng(lat, lng) {
+      return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+    }
+
+    function parseCoordsFromText(value) {
+      const raw = safeDecode(value);
+      if (!raw) return null;
+
+      const patterns = [
+        /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/i,
+        /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/i,
+        /(?:q|query|ll|center)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/i,
+        /(-?\d{1,2}\.\d{3,})\s*,\s*(-?\d{1,3}\.\d{3,})/i
+      ];
+
+      for (const re of patterns) {
+        const m = raw.match(re);
+        if (!m) continue;
+        const lat = Number.parseFloat(m[1]);
+        const lng = Number.parseFloat(m[2]);
+        if (validLatLng(lat, lng)) return { lat, lng };
+      }
+      return null;
+    }
+
+    function findGoogleUrl(row) {
+      const preferred = getRowValue(row, ["google maps", "google", "maps", "link google", "link goodle", "enlace google", "url google"]);
+      if (String(preferred || "").trim()) return String(preferred).trim();
+      for (const value of Object.values(row || {})) {
+        const s = String(value || "").trim();
+        if (/google\.|maps|goo\.gl|maps\.app\.goo\.gl/i.test(s)) return s;
+      }
+      const generic = getRowValue(row, ["link", "enlace", "url"]);
+      return String(generic || "").trim();
+    }
+
+    function findSiteloUrl(row) {
+      const preferred = getRowValue(row, ["sitelo", "link sitelo", "url sitelo", "enlace sitelo"]);
+      if (String(preferred || "").trim()) return String(preferred).trim();
+      for (const value of Object.values(row || {})) {
+        const s = String(value || "").trim();
+        if (/sitelo/i.test(s)) return s;
+      }
+      return "";
+    }
+
+    function findPdfUrl(row) {
+      const preferred = getRowValueStrict(row, [
+        "link pdf sitelo",
+        "pdf sitelo",
+        "link pdf",
+        "url pdf",
+        "pdf",
+        "informe pdf",
+        "reporte pdf",
+        "documento pdf",
+        "archivo pdf",
+        "drive pdf",
+        "link drive"
+      ]);
+
+      const normalizedPreferred = normalizePdfUrl(preferred);
+      if (normalizedPreferred) return normalizedPreferred;
+
+      for (const [key, value] of Object.entries(row || {})) {
+        const header = normalizeKey(key);
+        const raw = String(value || "").trim();
+        if (!raw) continue;
+
+        const headerLooksPdf = (
+          header.includes("pdf") ||
+          header.includes("documento") ||
+          header.includes("informe") ||
+          header.includes("reporte") ||
+          header.includes("archivo") ||
+          header.includes("drive")
+        );
+
+        const normalized = normalizePdfUrl(raw);
+
+        // Solo acepta links en columnas relacionadas a PDF/Drive.
+        // Excepción: si el valor termina explícitamente en .pdf.
+        if (normalized && headerLooksPdf) return normalized;
+        if (normalized && /\.pdf(\?|#|$)/i.test(raw)) return normalized;
+      }
+
+      return "";
+    }
+
+    function normalizeGrade(value) {
+      const s = String(value || "").trim().toUpperCase();
+      if (s.startsWith("A")) return "A";
+      if (s.startsWith("C")) return "C";
+      return "B";
+    }
+
+    function formatScore(value) {
+      const n = parseNumber(value);
+      if (!Number.isFinite(n)) return "—";
+      return n.toLocaleString("es-SV", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function cleanPointName(value, index) {
+      const raw = String(value || `Punto ${index + 1}`).trim();
+      return raw
+        .replace(/^\s*(?:pto|punto)\s*\d+\s*[-–—:]\s*/i, "")
+        .replace(/^\s*(?:pto|punto)\s*\d+\s+/i, "")
+        .trim() || raw;
+    }
+
+    function makePointId(name, lat, lng, index) {
+      const base = `${name}|${Number(lat).toFixed(6)}|${Number(lng).toFixed(6)}`;
+      let hash = 0;
+      for (let i = 0; i < base.length; i++) hash = ((hash << 5) - hash + base.charCodeAt(i)) | 0;
+      return `p_${Math.abs(hash).toString(36)}_${index + 1}`;
+    }
+
+    function extractPointFromRow(row, index) {
+      const google = findGoogleUrl(row);
+      const latFromCol = parseNumber(getRowValue(row, ["latitud", "latitude", "lat"]));
+      const lngFromCol = parseNumber(getRowValue(row, ["longitud", "longitude", "lng", "long", "lon"]));
+
+      let lat = latFromCol;
+      let lng = lngFromCol;
+
+      if (!validLatLng(lat, lng)) {
+        const coordText = [
+          getRowValue(row, ["coordenadas", "coordenada", "coord", "gps", "ubicacion", "ubicación"]),
+          google,
+          ...Object.values(row || {})
+        ].join(" ");
+        const parsed = parseCoordsFromText(coordText);
+        if (parsed) {
+          lat = parsed.lat;
+          lng = parsed.lng;
+        }
+      }
+
+      if (!validLatLng(lat, lng)) return null;
+
+      const nombreRaw = getRowValue(row, ["caracteristicas", "características", "caracteristica", "característica", "punto", "nombre", "nombre punto", "descripcion", "descripción", "tienda", "sucursal", "ubicacion", "ubicación", "direccion", "dirección", "zona", "name"]);
+      const nombre = cleanPointName(nombreRaw, index);
+      const tipo = String(getRowValue(row, ["tipo", "clasificacion", "clasificación", "categoria", "categoría"]) || "N/D").trim();
+      const defaultNota = normalizeGrade(getRowValue(row, ["evaluacion sitelo", "evaluación sitelo", "evaluacion", "evaluación", "nota", "calificacion", "calificación"]));
+      const puntuacionSitelo = getRowValue(row, ["puntuacion sitelo", "puntuación sitelo", "puntuacion", "puntuación", "score sitelo", "score"]);
+      const observacion = String(getRowValue(row, ["comentario", "observacion", "observación", "notas", "detalle"]) || "").trim();
+      const sitelo = findSiteloUrl(row);
+      const pdfSitelo = findPdfUrl(row);
+      const googleFinal = google || `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+      const id = makePointId(nombre, lat, lng, index);
+      const saved = edits[id] || {};
+
+      return {
+        id,
+        tipo,
+        nombre,
+        google: googleFinal,
+        lat,
+        lng,
+        defaultNota,
+        puntuacionSitelo,
+        observacion,
+        nota: defaultNota || "B",
+        sitelo: saved.sitelo || sitelo || "",
+        pdfSitelo,
+        comentario: saved.comentario || observacion || ""
+      };
+    }
+
+    function worksheetToObjects(sheet) {
+      const ref = sheet && sheet["!ref"];
+      if (!ref) return [];
+      const matrix = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "", raw: false });
+      if (!matrix.length) return [];
+
+      const scanLimit = Math.min(matrix.length, 12);
+      const headerScore = (row) => {
+        const keys = (row || []).map(v => normalizeKey(v));
+        let score = 0;
+        if (keys.includes("tipo")) score += 5;
+        if (keys.includes("caracteristicas") || keys.includes("caracteristica")) score += 8;
+        if (keys.includes("link") || keys.includes("enlace") || keys.includes("url")) score += 5;
+        if (keys.includes("evaluacionsitelo") || keys.includes("evaluacion")) score += 6;
+        if (keys.includes("puntuacionsitelo") || keys.includes("puntuacion")) score += 6;
+        if (keys.includes("latitud") || keys.includes("latitude") || keys.includes("lat")) score += 3;
+        if (keys.includes("longitud") || keys.includes("longitude") || keys.includes("lng")) score += 3;
+        return score;
+      };
+
+      let headerRowIndex = 0;
+      let bestScore = -1;
+      let bestCount = 0;
+
+      for (let r = 0; r < scanLimit; r++) {
+        const row = matrix[r] || [];
+        const score = headerScore(row);
+        const count = row.filter(v => String(v ?? "").trim()).length;
+
+        // Prioridad: fila con encabezados reales. En tu Excel, "Tipo" y
+        // "Caracteristicas" están en la fila 4, mientras "Link" viene en la
+        // fila superior por el formato del encabezado.
+        if (score > bestScore || (score === bestScore && score > 0 && count > bestCount)) {
+          bestScore = score;
+          bestCount = count;
+          headerRowIndex = r;
+        }
+      }
+
+      if (bestScore <= 0) {
+        let fallbackCount = 0;
+        for (let r = 0; r < scanLimit; r++) {
+          const count = (matrix[r] || []).filter(v => String(v ?? "").trim()).length;
+          if (count > fallbackCount) {
+            fallbackCount = count;
+            headerRowIndex = r;
+          }
+        }
+      }
+
+      const rawHeaders = matrix[headerRowIndex] || [];
+      const maxCols = Math.max(
+        rawHeaders.length,
+        ...matrix.slice(headerRowIndex + 1).map(row => (row || []).length)
+      );
+
+      const headers = Array.from({ length: maxCols }, (_, i) => {
+        const current = String(rawHeaders[i] || "").trim();
+        if (current) return current;
+
+        // Si el encabezado está una fila arriba por celdas combinadas/estilo,
+        // úsalo. Esto recupera "Link" en la columna C de tu archivo.
+        for (let r = headerRowIndex - 1; r >= Math.max(0, headerRowIndex - 3); r--) {
+          const candidate = String((matrix[r] || [])[i] || "").trim();
+          if (candidate && !/^(peso categoria|categorias|criterio)$/i.test(candidate)) return candidate;
+        }
+
+        return `Columna ${i + 1}`;
+      });
+
+      const rows = [];
+
+      for (let r = headerRowIndex + 1; r < matrix.length; r++) {
+        const arr = matrix[r] || [];
+        if (!arr.some(v => String(v ?? "").trim())) continue;
+        const obj = {};
+        headers.forEach((header, c) => {
+          const value = arr[c] ?? "";
+          obj[header] = value;
+          const cell = sheet[XLSX.utils.encode_cell({ r, c })];
+          const target = cell?.l?.Target || cell?.l?.Tooltip || "";
+          if (target) obj[`${header} hyperlink`] = target;
+        });
+        rows.push(obj);
+      }
+      return rows;
+    }
+
+    function fitToPoints() {
+      const valid = points.filter(p => validLatLng(p.lat, p.lng));
+      if (valid.length) {
+        const bounds = L.latLngBounds(valid.map(p => [p.lat, p.lng]));
+        map.fitBounds(bounds.pad(0.16));
+      } else {
+        map.setView([13.6929, -89.2182], 12);
+      }
+      requestAnimationFrame(() => map?.invalidateSize(true));
+    }
+
+    function loadRowsIntoMap(rows, sourceName = "Excel") {
+      const extracted = [];
+      let omitted = 0;
+      rows.forEach((row, index) => {
+        const point = extractPointFromRow(row, index);
+        if (point) extracted.push(point);
+        else omitted += 1;
+      });
+
+      points = extracted;
+      selectedId = points[0]?.id || null;
+      document.getElementById("searchBox").value = "";
+      document.getElementById("gradeFilter").value = "ALL";
+      refreshAll(false);
+      fitToPoints();
+
+      if (selectedId) selectPoint(selectedId, false);
+      else renderNoSelection("No encontré coordenadas válidas en el Excel. Revisa que tenga columnas Latitud/Longitud, Coordenadas o links de Google Maps.");
+
+      const status = points.length
+        ? `${sourceName}: ${points.length} punto(s) cargados con evaluación, puntuación y PDF Sitelo. ${omitted ? `${omitted} fila(s) sin coordenadas fueron omitidas.` : "Todas las filas tenían coordenadas válidas."}`
+        : `${sourceName}: no se pudieron cargar puntos válidos.`;
+      setUploadStatus(status, points.length ? (omitted ? "warn" : "ok") : "err");
+    }
+
+    async function handleExcelUpload(file) {
+      if (!file) return;
+      if (typeof XLSX === "undefined") {
+        setUploadStatus("No se pudo cargar la librería para leer Excel. Verifica conexión a internet y vuelve a abrir el HTML.", "err");
+        return;
+      }
+      setUploadStatus(`Leyendo ${file.name}...`, "warn");
+
+      try {
+        const isCsv = /\.csv$/i.test(file.name);
+        const data = isCsv ? await file.text() : await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: isCsv ? "string" : "array" });
+        let rows = [];
+        let sheetName = workbook.SheetNames[0] || "Hoja1";
+
+        for (const candidate of workbook.SheetNames) {
+          const sheetRows = worksheetToObjects(workbook.Sheets[candidate]);
+          if (sheetRows.length > rows.length) {
+            rows = sheetRows;
+            sheetName = candidate;
+          }
+        }
+
+        if (!rows.length) {
+          points = [];
+          selectedId = null;
+          refreshAll(false);
+          fitToPoints();
+          renderNoSelection("El archivo no tiene filas para cargar.");
+          setUploadStatus("El Excel está vacío o no tiene datos visibles.", "err");
+          return;
+        }
+
+        loadRowsIntoMap(rows, `${file.name} · ${sheetName}`);
+      } catch (error) {
+        console.error(error);
+        setUploadStatus(`Error leyendo el Excel: ${error.message || error}`, "err");
+      }
+    }
+
+    function haversineKm(a, b) {
+      const R = 6371;
+      const dLat = toRad(b.lat - a.lat);
+      const dLng = toRad(b.lng - a.lng);
+      const lat1 = toRad(a.lat);
+      const lat2 = toRad(b.lat);
+      const h = Math.sin(dLat/2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng/2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(h));
+    }
+
+    function toRad(deg) {
+      return deg * Math.PI / 180;
+    }
+
+    function nearestPoint(point) {
+      const candidates = points
+        .filter(p => p.id !== point.id && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+        .map(p => ({ point: p, km: haversineKm(point, p) }))
+        .sort((a, b) => a.km - b.km);
+      return candidates[0] || null;
+    }
+
+    function pointsWithin3Km(point) {
+      return points
+        .filter(p => p.id !== point.id && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+        .map(p => ({ point: p, km: haversineKm(point, p) }))
+        .filter(x => x.km <= PERIMETER_KM)
+        .sort((a, b) => a.km - b.km);
+    }
+
+    function initMap() {
+      map = L.map("map", {
+        zoomControl: true,
+        preferCanvas: true
+      });
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        tileSize: 256,
+        zoomOffset: 0,
+        crossOrigin: true,
+        subdomains: "abc",
+        attribution: "&copy; OpenStreetMap"
+      }).addTo(map);
+
+      markersLayer = L.layerGroup().addTo(map);
+      circlesLayer = L.layerGroup().addTo(map);
+
+      renderMapObjects();
+      map.setView([13.6929, -89.2182], 12);
+
+      requestAnimationFrame(() => map.invalidateSize(true));
+      setTimeout(() => map.invalidateSize(true), 200);
+      setTimeout(() => map.invalidateSize(true), 700);
+    }
+
+    function markerIcon(point) {
+      return L.divIcon({
+        className: "ampm-div-icon",
+        html: `<div class="marker-pin ${point.nota} ${point.id === selectedId ? "selected" : ""}" style="background:${COLORS[point.nota]}"><span>${escapeHTML(point.nota)}</span></div>`,
+        iconSize: [34, 42],
+        iconAnchor: [16, 34],
+        popupAnchor: [2, -32]
+      });
+    }
+
+    function popupHtml(point) {
+      const nearby = pointsWithin3Km(point);
+      const nearest = nearestPoint(point);
+      const pdfBlock = point.pdfSitelo
+        ? `<a class="btn secondary" href="${attr(point.pdfSitelo)}" target="_blank" rel="noopener">Ver PDF Drive</a>`
+        : "";
+      const alertClass = nearby.length ? "zone-alert" : "safe-alert";
+      const alertTitle = nearby.length ? "⚠ Alerta de zona" : "✓ Sin alerta de zona";
+      const alertDetail = nearby.length
+        ? `Este punto cae dentro del perímetro de ${PERIMETER_KM} km de ${nearby.length} punto(s): ${nearby.slice(0, 5).map(x => `${escapeHTML(x.point.nombre)} (${x.km.toFixed(2)} km)`).join(" · ")}${nearby.length > 5 ? " · ..." : ""}.`
+        : `No hay otros puntos dentro del perímetro operativo de ${PERIMETER_KM} km.`;
+
+      return `
+        <div class="popup">
+          <h3>${escapeHTML(point.nombre)}</h3>
+          <p><b>Coordenadas:</b> ${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}</p>
+          <p><b>Evaluación Sitelo:</b> <span style="color:${COLORS[point.nota]};font-weight:900">${escapeHTML(GRADE_LABEL[point.nota])}</span></p>
+          <p><b>Puntuación Sitelo:</b> <span style="font-weight:900;color:var(--ampm-dark)">${formatScore(point.puntuacionSitelo)}</span></p>
+          <span class="distance-pill">Radio visible: punto seleccionado · ${PERIMETER_KM} km</span>
+          <div class="${alertClass}"><b>${alertTitle}:</b> ${alertDetail}</div>
+          ${nearest ? `<p><b>Más cercano:</b> ${escapeHTML(nearest.point.nombre)} · ${nearest.km.toFixed(2)} km</p>` : ""}
+          ${point.comentario ? `<p><b>Comentario:</b> ${escapeHTML(point.comentario)}</p>` : ""}
+          <div class="popup-actions">
+            <a class="btn" href="${attr(point.google)}" target="_blank" rel="noopener">Google Maps</a>
+            ${pdfBlock}
+          </div>
+          <div style="margin-top:7px">
+            <button class="orange" type="button" onclick="selectPoint('${attr(point.id)}')">Ver evaluación</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMapObjects() {
+      markersLayer.clearLayers();
+      circlesLayer.clearLayers();
+      markers.clear();
+      circles.clear();
+
+      getFilteredPoints().forEach(point => {
+        if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
+
+        const circle = L.circle([point.lat, point.lng], {
+          radius: PERIMETER_M,
+          color: COLORS[point.nota],
+          weight: 2,
+          opacity: 0.42,
+          fillColor: COLORS[point.nota],
+          fillOpacity: 0.07,
+          interactive: false
+        });
+        circles.set(point.id, circle);
+        if (showRadius && point.id === selectedId) circlesLayer.addLayer(circle);
+
+        const marker = L.marker([point.lat, point.lng], {
+          icon: markerIcon(point),
+          riseOnHover: true
+        })
+        .bindPopup(popupHtml(point), { maxWidth: 315 })
+        .bindTooltip(escapeHTML(point.nombre), {
+          permanent: true,
+          direction: "right",
+          offset: [12, -24],
+          className: "point-label",
+          opacity: 0.96
+        })
+        .on("click", () => selectPoint(point.id, false));
+
+        markers.set(point.id, marker);
+        markersLayer.addLayer(marker);
+      });
+    }
+
+    function getFilteredPoints() {
+      const term = document.getElementById("searchBox").value.trim().toLowerCase();
+      const grade = document.getElementById("gradeFilter").value;
+      return points.filter(p => {
+        const text = `${p.nombre} ${p.tipo} ${p.lat} ${p.lng} ${p.nota} ${p.puntuacionSitelo ?? ""} ${p.comentario} ${p.sitelo}`.toLowerCase();
+        return (grade === "ALL" || p.nota === grade) && (!term || text.includes(term));
+      });
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("pointsTable");
+      const rows = getFilteredPoints().slice().sort((a, b) => {
+        const scoreA = Number.isFinite(Number(a.puntuacionSitelo)) ? Number(a.puntuacionSitelo) : -Infinity;
+        const scoreB = Number.isFinite(Number(b.puntuacionSitelo)) ? Number(b.puntuacionSitelo) : -Infinity;
+        if (scoreB !== scoreA) return scoreB - scoreA; // mayor puntuación primero
+        return String(a.nombre || "").localeCompare(String(b.nombre || ""), "es");
+      });
+      tbody.innerHTML = "";
+      const emptyState = document.getElementById("emptyState");
+      emptyState.textContent = points.length ? "No hay puntos con esos filtros." : "Sube el Excel para mostrar los puntos en el mapa.";
+      emptyState.style.display = rows.length ? "none" : "block";
+
+      rows.forEach(point => {
+        const nearest = nearestPoint(point);
+        const nearby = pointsWithin3Km(point);
+        const tr = document.createElement("tr");
+        tr.className = `${point.id === selectedId ? "active " : ""}${nearby.length ? "risk-overlap" : ""}`.trim();
+        tr.dataset.id = point.id;
+
+        tr.innerHTML = `
+          <td>
+            <div class="name-cell">${escapeHTML(point.nombre)}</div>
+            <div class="small">${Number(point.lat).toFixed(5)}, ${Number(point.lng).toFixed(5)}</div>
+          </td>
+          <td>
+            <span class="grade-pill" style="background:${COLORS[point.nota]}">${escapeHTML(point.nota)}</span>
+          </td>
+          <td>
+            <span class="score-mini">${formatScore(point.puntuacionSitelo)}</span>
+          </td>
+          <td>
+            <div class="small">${nearest ? `${escapeHTML(nearest.point.nombre)}<br><b>${nearest.km.toFixed(2)} km</b>` : "N/D"}</div>
+            ${nearby.length ? `<span class="alert-pill">Alerta ${nearby.length}</span>` : `<span class="ok-pill">Libre</span>`}
+          </td>
+        `;
+
+        tr.addEventListener("click", (e) => {
+          if (e.target.matches("select,input,textarea")) return;
+          selectPoint(point.id, true);
+        });
+
+        tbody.appendChild(tr);
+      });
+
+    }
+
+    window.selectPoint = function(id, fly = true) {
+      const point = points.find(p => p.id === id);
+      if (!point) return;
+      selectedId = id;
+      renderSelected(point);
+      renderMapObjects();
+      renderTable();
+
+      if (fly && map && Number.isFinite(point.lat) && Number.isFinite(point.lng)) {
+        map.flyTo([point.lat, point.lng], Math.max(map.getZoom(), 14), { duration: 0.65 });
+      }
+
+      const marker = markers.get(id);
+      if (marker) {
+        marker.setPopupContent(popupHtml(point));
+        marker.openPopup();
+      }
+    }
+
+    function renderSelected(point) {
+      document.getElementById("selectedName").textContent = point.nombre;
+      document.getElementById("selectedMeta").textContent = `${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}`;
+      const badge = document.getElementById("selectedBadge");
+      badge.textContent = point.nota;
+      badge.className = `badge ${point.nota}`;
+      const gradeDisplay = document.getElementById("selectedGradeDisplay");
+      gradeDisplay.textContent = GRADE_LABEL[point.nota] || point.nota;
+      gradeDisplay.className = `readonly-pill grade-${point.nota}`;
+      document.getElementById("selectedScoreDisplay").textContent = formatScore(point.puntuacionSitelo);
+      document.getElementById("selectedSitelo").value = point.sitelo || "";
+      document.getElementById("selectedComment").value = point.comentario || "";
+
+      const google = document.getElementById("googleLink");
+      google.href = point.google || `https://www.google.com/maps/search/?api=1&query=${point.lat},${point.lng}`;
+      google.style.pointerEvents = "auto";
+      google.style.opacity = "1";
+
+      const pdfLink = document.getElementById("pdfLink");
+      if (point.pdfSitelo) {
+        pdfLink.href = point.pdfSitelo;
+        pdfLink.style.pointerEvents = "auto";
+        pdfLink.style.opacity = "1";
+        pdfLink.style.display = "";
+      } else {
+        pdfLink.href = "#";
+        pdfLink.style.pointerEvents = "none";
+        pdfLink.style.opacity = ".55";
+        pdfLink.style.display = "none";
+      }
+
+      const nearby = pointsWithin3Km(point);
+      const nearest = nearestPoint(point);
+      const nearbyRows = nearby.slice(0, 8).map(x => `
+        <div class="nearby-row">
+          <span>${escapeHTML(x.point.nombre)}</span>
+          <span>${x.km.toFixed(2)} km</span>
+        </div>`).join("");
+      const nearestHtml = nearest
+        ? `<div class="small" style="margin-top:7px">Punto más cercano: <b>${escapeHTML(nearest.point.nombre)}</b> a <b>${nearest.km.toFixed(2)} km</b>.</div>`
+        : `<div class="small" style="margin-top:7px">No hay suficientes puntos para calcular cercanía.</div>`;
+      document.getElementById("nearbyInfo").innerHTML = nearby.length
+        ? `<div class="zone-alert"><b>⚠ Alerta operativa:</b> este punto cae dentro del perímetro de ${PERIMETER_KM} km de ${nearby.length} punto(s).${nearbyRows ? `<div class="nearby-list">${nearbyRows}</div>` : ""}</div>${nearestHtml}`
+        : `<div class="safe-alert"><b>✓ Sin alerta operativa:</b> este punto no cae dentro del perímetro de ${PERIMETER_KM} km de otros puntos.</div>${nearestHtml}`;
+    }
+
+    function renderNoSelection(message = "Sube el Excel y selecciona un punto para ver la evaluación Sitelo.") {
+      document.getElementById("selectedName").textContent = "Sin punto seleccionado";
+      document.getElementById("selectedMeta").textContent = message;
+      const badge = document.getElementById("selectedBadge");
+      badge.textContent = "—";
+      badge.className = "badge B";
+      const gradeDisplay = document.getElementById("selectedGradeDisplay");
+      if (gradeDisplay) {
+        gradeDisplay.textContent = "—";
+        gradeDisplay.className = "readonly-pill";
+      }
+      const scoreDisplay = document.getElementById("selectedScoreDisplay");
+      if (scoreDisplay) scoreDisplay.textContent = "—";
+      document.getElementById("selectedSitelo").value = "";
+      document.getElementById("selectedComment").value = "";
+      document.getElementById("googleLink").href = "#";
+      const pdfLink = document.getElementById("pdfLink");
+      if (pdfLink) {
+        pdfLink.href = "#";
+        pdfLink.style.pointerEvents = "none";
+        pdfLink.style.opacity = ".55";
+        pdfLink.style.display = "none";
+      }
+      document.getElementById("googleLink").style.pointerEvents = "none";
+      document.getElementById("googleLink").style.opacity = ".55";
+      document.getElementById("nearbyInfo").innerHTML = `<div class="hint">${escapeHTML(message)}</div>`;
+    }
+
+    function updateSelectedFromForm() {
+      const point = points.find(p => p.id === selectedId);
+      if (!point) return;
+      point.sitelo = document.getElementById("selectedSitelo").value.trim();
+      point.comentario = document.getElementById("selectedComment").value.trim();
+      persistPoint(point);
+      refreshAll(false);
+    }
+
+    function renderKpis() {
+      document.getElementById("kpiTotal").textContent = points.length;
+      document.getElementById("kpiA").textContent = points.filter(p => p.nota === "A").length;
+      document.getElementById("kpiB").textContent = points.filter(p => p.nota === "B").length;
+      document.getElementById("kpiC").textContent = points.filter(p => p.nota === "C").length;
+    }
+
+    function refreshAll(keepPopup = true) {
+      renderKpis();
+      renderMapObjects();
+      renderTable();
+
+      const selected = points.find(p => p.id === selectedId) || points[0];
+      if (selected) {
+        selectedId = selected.id;
+        renderSelected(selected);
+      } else {
+        selectedId = null;
+        renderNoSelection();
+      }
+
+      if (keepPopup && selected && markers.has(selected.id)) {
+        markers.get(selected.id).openPopup();
+      }
+    }
+
+    function exportCsv() {
+      if (!points.length) {
+        alert("Primero sube un Excel con puntos válidos para exportar la evaluación.");
+        return;
+      }
+      const headers = ["id","punto","tipo_excel","latitud","longitud","evaluacion_sitelo","puntuacion_sitelo","link_google_maps","link_pdf_sitelo","link_sitelo","comentario","punto_mas_cercano","distancia_mas_cercana_km","puntos_dentro_3km"];
+      const rows = points.map(p => {
+        const nearest = nearestPoint(p);
+        const nearby = pointsWithin3Km(p);
+        return [
+          p.id,
+          p.nombre,
+          p.tipo || "",
+          p.lat,
+          p.lng,
+          p.nota,
+          formatScore(p.puntuacionSitelo),
+          p.google || "",
+          p.pdfSitelo || "",
+          p.sitelo || "",
+          p.comentario || "",
+          nearest?.point?.nombre || "",
+          nearest ? nearest.km.toFixed(2) : "",
+          nearby.length
+        ];
+      });
+
+      const csv = [headers, ...rows]
+        .map(row => row.map(value => `"${String(value ?? "").replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+
+      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "evaluacion_puntos_ampm.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initMap();
+      renderKpis();
+      renderTable();
+      renderNoSelection();
+
+      document.getElementById("excelInput").addEventListener("change", e => {
+        handleExcelUpload(e.target.files?.[0]);
+      });
+
+      if (selectedId) selectPoint(selectedId, false);
+
+      document.getElementById("searchBox").addEventListener("input", () => {
+        renderMapObjects();
+        renderTable();
+      });
+
+      document.getElementById("gradeFilter").addEventListener("change", () => {
+        renderMapObjects();
+        renderTable();
+      });
+
+      document.getElementById("toggleRadiusBtn").addEventListener("click", () => {
+        showRadius = !showRadius;
+        document.getElementById("toggleRadiusBtn").textContent = showRadius ? "Ocultar perímetro seleccionado 3 km" : "Mostrar perímetro seleccionado 3 km";
+        renderMapObjects();
+      });
+
+      document.getElementById("exportBtn").addEventListener("click", exportCsv);
+
+      ["selectedSitelo", "selectedComment"].forEach(id => {
+        document.getElementById(id).addEventListener("change", updateSelectedFromForm);
+      });
+
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => map?.invalidateSize(), 160);
+      });
+    });
+  </script>
+</body>
+</html>
