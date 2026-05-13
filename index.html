@@ -807,6 +807,30 @@
       font-weight: 900;
     }
 
+    .street-view-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: max-content;
+      min-width: 86px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      color: var(--ampm-blue);
+      font-size: 11px;
+      font-weight: 1000;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: none;
+    }
+
+    .street-view-btn:hover {
+      background: var(--ampm-blue);
+      color: #FFFFFF;
+      transform: translateY(-1px);
+    }
+
     .grade-A { border-color: rgba(18,160,92,.35); background: rgba(18,160,92,.09); color: #0F7A49; }
     .grade-B { border-color: rgba(215,168,30,.38); background: rgba(215,168,30,.11); color: #996F00; }
     .grade-C { border-color: rgba(245,131,32,.38); background: rgba(245,131,32,.11); color: #B45309; }
@@ -1132,10 +1156,11 @@
           <table>
             <thead>
               <tr>
-                <th style="width:38%">Punto</th>
-                <th style="width:18%">Evaluación</th>
-                <th style="width:16%">Puntuación ↓</th>
-                <th style="width:28%">Cercanía</th>
+                <th style="width:32%">Punto</th>
+                <th style="width:15%">Evaluación</th>
+                <th style="width:15%">Puntuación ↓</th>
+                <th style="width:24%">Cercanía</th>
+                <th style="width:14%">Street View</th>
               </tr>
             </thead>
             <tbody id="pointsTable"></tbody>
@@ -2343,6 +2368,11 @@ const GRADE_LABEL = {
       return `p_${Math.abs(hash).toString(36)}_${index + 1}`;
     }
 
+    function makeStreetViewUrl(point) {
+      if (!point || !validLatLng(point.lat, point.lng)) return "#";
+      return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${point.lat},${point.lng}`;
+    }
+
     function extractPointFromRow(row, index) {
       const google = findGoogleUrl(row);
       const latFromCol = parseNumber(getRowValue(row, ["latitud", "latitude", "lat"]));
@@ -2887,10 +2917,13 @@ function renderCompetitorObjects() {
             <div class="small">${nearest ? `${escapeHTML(nearest.point.nombre)}<br><b>${nearest.km.toFixed(2)} km</b>` : "N/D"}</div>
             ${nearby.length ? `<span class="alert-pill">Alerta ${nearby.length}</span>` : `<span class="ok-pill">Libre</span>`}
           </td>
+          <td>
+            <a class="street-view-btn" href="${attr(makeStreetViewUrl(point))}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Street View</a>
+          </td>
         `;
 
         tr.addEventListener("click", (e) => {
-          if (e.target.matches("select,input,textarea")) return;
+          if (e.target.matches("select,input,textarea,a,button") || e.target.closest("a,button")) return;
           selectPoint(point.id, true);
         });
 
@@ -3033,7 +3066,7 @@ function renderCompetitorObjects() {
         alert("Primero sube un Excel con puntos válidos para exportar la evaluación.");
         return;
       }
-      const headers = ["id","punto","tipo_excel","latitud","longitud","evaluacion_sitelo","puntuacion_sitelo","link_google_maps","link_pdf_sitelo","link_sitelo","comentario","punto_mas_cercano","distancia_mas_cercana_km","puntos_dentro_3km"];
+      const headers = ["id","punto","tipo_excel","latitud","longitud","evaluacion_sitelo","puntuacion_sitelo","link_google_maps","link_street_view","link_pdf_sitelo","link_sitelo","comentario","punto_mas_cercano","distancia_mas_cercana_km","puntos_dentro_3km"];
       const rows = points.map(p => {
         const nearest = nearestPoint(p);
         const nearby = pointsWithin3Km(p);
@@ -3046,6 +3079,7 @@ function renderCompetitorObjects() {
           p.nota,
           formatScore(p.puntuacionSitelo),
           p.google || "",
+          makeStreetViewUrl(p),
           p.pdfSitelo || "",
           p.sitelo || "",
           p.comentario || "",
