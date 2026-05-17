@@ -167,9 +167,9 @@
       --text:#0F172A;
       --muted:#64748B;
       --line:#E2E8F0;
-      --a:#12A05C;
-      --b:#D7A81E;
-      --c:#F58320;
+      --a:#005EA7;
+      --b:#F58320;
+      --c:#64748B;
       --shadow: 0 16px 35px rgba(17, 40, 74, .12);
       --shadow-soft: 0 8px 22px rgba(17, 40, 74, .08);
     }
@@ -271,6 +271,12 @@
       grid-template-columns: minmax(420px, 1fr) 450px;
       gap: 14px;
       padding: 14px;
+      position: relative;
+      transition: grid-template-columns .22s ease;
+    }
+
+    .layout.sidebar-collapsed {
+      grid-template-columns: minmax(420px, 1fr) 0px;
     }
 
     #map {
@@ -295,6 +301,55 @@
       padding-bottom: 16px;
       scroll-behavior: smooth;
       overscroll-behavior: contain;
+      transition: opacity .18s ease, transform .22s ease, padding .22s ease;
+      min-width: 0;
+    }
+
+    .layout.sidebar-collapsed .panel {
+      opacity: 0;
+      pointer-events: none;
+      overflow: hidden;
+      padding-right: 0;
+      padding-bottom: 0;
+      transform: translateX(18px);
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      top: 50%;
+      right: 457px;
+      transform: translate(50%, -50%);
+      width: 38px;
+      height: 58px;
+      border-radius: 16px;
+      border: 1px solid rgba(17,40,74,.12);
+      background: rgba(255,255,255,.96);
+      color: var(--ampm-blue);
+      box-shadow: 0 10px 24px rgba(17, 40, 74, .16);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      z-index: 900;
+      transition: right .22s ease, transform .18s ease, background .18s ease, color .18s ease, box-shadow .18s ease;
+    }
+
+    .sidebar-toggle:hover {
+      background: #FFFFFF;
+      color: var(--ampm-dark);
+      box-shadow: 0 12px 28px rgba(17, 40, 74, .22);
+      transform: translate(50%, -50%) scale(1.02);
+    }
+
+    .layout.sidebar-collapsed .sidebar-toggle {
+      right: 14px;
+      transform: translateY(-50%);
+    }
+
+    .layout.sidebar-collapsed .sidebar-toggle:hover {
+      transform: translateY(-50%) scale(1.02);
     }
 
     .panel::-webkit-scrollbar,
@@ -321,6 +376,72 @@
       display: grid;
       grid-template-columns: 1fr 132px;
       gap: 9px;
+    }
+
+    .priority-filter-box {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid #D8E1EE;
+      background: linear-gradient(180deg, #FFFFFF, #F8FAFC);
+    }
+
+    .priority-filter-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--ampm-dark);
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .2px;
+    }
+
+    .priority-filter-note {
+      font-size: 10.5px;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .priority-filter-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .priority-filter-btn {
+      border: 1px solid #D8E1EE;
+      background: #FFFFFF;
+      color: var(--ampm-dark);
+      border-radius: 12px;
+      padding: 9px 8px;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .priority-filter-btn:hover {
+      transform: translateY(-1px);
+      border-color: #93C5FD;
+      box-shadow: 0 8px 18px rgba(17,40,74,.10);
+    }
+
+    .priority-filter-btn.active {
+      background: var(--ampm-blue);
+      color: #FFFFFF;
+      border-color: var(--ampm-blue);
+      box-shadow: 0 10px 22px rgba(0,94,167,.20);
+    }
+
+    .priority-filter-btn[data-priority-filter="2"].active {
+      background: #7C3AED;
+      border-color: #7C3AED;
+      box-shadow: 0 10px 22px rgba(124,58,237,.22);
     }
 
     .upload-box {
@@ -653,15 +774,69 @@
     }
 
     .map-insight-legend {
-      max-width: 310px;
-      padding: 10px 11px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.94);
-      border: 1px solid rgba(15,23,42,.14);
-      box-shadow: 0 10px 24px rgba(15,23,42,.16);
+      max-width: 52px;
+      padding: 0;
+      border-radius: 999px;
+      background: rgba(255,255,255,.84);
+      border: 1px solid rgba(15,23,42,.12);
+      box-shadow: 0 8px 18px rgba(15,23,42,.14);
       color: var(--ampm-dark);
       font-size: 11px;
       line-height: 1.28;
+      overflow: hidden;
+      transition: max-width .2s ease, border-radius .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .map-insight-legend:hover,
+    .map-insight-legend:focus-within,
+    .map-insight-legend.is-open {
+      max-width: 310px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 10px 24px rgba(15,23,42,.16);
+    }
+
+    .map-insight-toggle {
+      width: 52px;
+      height: 34px;
+      border: 0;
+      background: transparent;
+      color: var(--ampm-blue);
+      font-size: 12px;
+      font-weight: 1000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 0 9px;
+    }
+
+    .map-insight-toggle::before {
+      content: "i";
+      width: 17px;
+      height: 17px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ampm-blue);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 1000;
+      font-family: Georgia, serif;
+    }
+
+    .map-insight-content {
+      display: none;
+      padding: 0 11px 10px 11px;
+      min-width: 280px;
+    }
+
+    .map-insight-legend:hover .map-insight-content,
+    .map-insight-legend:focus-within .map-insight-content,
+    .map-insight-legend.is-open .map-insight-content {
+      display: block;
     }
 
     .map-insight-legend b {
@@ -913,8 +1088,18 @@
     tbody tr.risk-overlap:hover { background: #FEF3C7; }
     tbody tr.active.risk-overlap { background: #EFF6FF; }
     .marker-pin.selected {
-      box-shadow: 0 0 0 5px rgba(0,94,167,.22), 0 7px 20px rgba(0,0,0,.34);
       border-color: #FFFFFF;
+      box-shadow:
+        0 0 0 3px rgba(255,255,255,.98),
+        0 0 0 7px rgba(0,94,167,.52),
+        0 13px 28px rgba(15,23,42,.38);
+      transform: rotate(-45deg) scale(1.13);
+    }
+
+    .marker-pin.selected span {
+      font-size: 14px;
+      font-weight: 1000;
+      text-shadow: 0 2px 4px rgba(0,0,0,.36);
     }
 
 
@@ -973,6 +1158,38 @@
     .marker-pin.A { background: var(--a); }
     .marker-pin.B { background: var(--b); }
     .marker-pin.C { background: var(--c); }
+
+    .marker-pin.priority-1 {
+      border-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(0,94,167,.16), 0 6px 18px rgba(0,0,0,.32);
+    }
+
+    .marker-pin.priority-2 {
+      border-color: #F9A8D4;
+      box-shadow: 0 0 0 5px rgba(236,72,153,.28), 0 7px 20px rgba(0,0,0,.34);
+    }
+
+
+    .priority-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: max-content;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 950;
+      margin-top: 5px;
+      border: 1px solid #BFDBFE;
+      color: #075985;
+      background: #EFF6FF;
+    }
+
+    .priority-pill.p2 {
+      color: #5B21B6;
+      background: #F3E8FF;
+      border-color: #C4B5FD;
+    }
 
     .leaflet-popup-content-wrapper {
       border-radius: 16px;
@@ -2231,8 +2448,14 @@
       .app { min-height: 100vh; height: auto; }
       .topbar-inner { grid-template-columns: 1fr; }
       .layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
+      .layout.sidebar-collapsed { grid-template-columns: 1fr; }
       #map { height: 62vh; min-height: 470px; }
       .panel { overflow: visible; max-height: none; padding-right: 0; }
+      .sidebar-toggle { display: none; }
+      .map-insight-legend { max-width: 46px; }
+      .map-insight-toggle { width: 46px; }
+      .map-insight-legend:hover, .map-insight-legend:focus-within, .map-insight-legend.is-open { max-width: 280px; }
+      .map-insight-content { min-width: 250px; }
       .table-wrap { max-height: 520px; }
     }
 
@@ -2240,7 +2463,7 @@
       .layout { padding: 8px; gap: 8px; }
       .topbar { padding: 12px; }
       .kpis { grid-template-columns: repeat(2, 1fr); }
-      .controls-grid, .button-row, .links-row, .form-grid, .competitor-top, .competitor-actions, .competitor-multi, .map-layer-grid { grid-template-columns: 1fr; }
+      .controls-grid, .button-row, .links-row, .form-grid, .competitor-top, .competitor-actions, .competitor-multi, .map-layer-grid, .priority-filter-actions { grid-template-columns: 1fr; }
       #map { min-height: 430px; }
     }
   </style>
@@ -2274,8 +2497,9 @@
 
     <main class="main-tabs">
       <section class="tab-page active" id="tab-mapa" aria-label="Mapa de expansión">
-        <section class="layout">
+        <section class="layout" id="mapLayout">
       <div id="map" aria-label="Mapa con puntos y perímetro seleccionado de 3 kilómetros"></div>
+      <button id="sidebarToggleBtn" class="sidebar-toggle" type="button" aria-label="Contraer panel lateral" aria-expanded="true" title="Contraer panel lateral">›</button>
 
       <aside class="panel">
         <section class="card controls">
@@ -2301,6 +2525,18 @@
               <option value="B">Solo B · opción media</option>
               <option value="C">Solo C · menor prioridad</option>
             </select>
+          </div>
+
+          <div class="priority-filter-box" aria-label="Filtro de prioridad de tiendas nuevas">
+            <div class="priority-filter-top">
+              <span>Prioridad TN</span>
+              <span id="priorityFilterSummary" class="priority-filter-note">Todos los puntos</span>
+            </div>
+            <div class="priority-filter-actions">
+              <button class="priority-filter-btn active" type="button" data-priority-filter="ALL">Todos</button>
+              <button class="priority-filter-btn" type="button" data-priority-filter="1">Prioridad 1</button>
+              <button class="priority-filter-btn" type="button" data-priority-filter="2">Prioridad 2</button>
+            </div>
           </div>
 
           <div class="legend">
@@ -2338,9 +2574,9 @@
             <div class="competitor-top">
               <div>
                 <div class="competitor-title">Mostrar competencia</div>
-                <div class="competitor-subtitle">Selecciona una o varias marcas</div>
+                <div class="competitor-subtitle">Pines exactos georreferenciados</div>
               </div>
-              <div id="competitorCount" class="competitor-total">0 / 100 visibles</div>
+              <div id="competitorCount" class="competitor-total">142 pines</div>
             </div>
 
             <div class="competitor-actions">
@@ -2351,11 +2587,12 @@
             <div class="competitor-multi" id="competitorBrandFilter" aria-label="Filtrar una o varias competencias">
               <label><input type="checkbox" value="Road Market" checked /><span class="brand-dot" style="background:#7C3AED"></span><span class="brand-name">Road Market</span><strong class="brand-count" data-brand-count="Road Market">40</strong></label>
               <label><input type="checkbox" value="TenGo" checked /><span class="brand-dot" style="background:#0EA5E9"></span><span class="brand-name">TenGo</span><strong class="brand-count" data-brand-count="TenGo">6</strong></label>
-              <label><input type="checkbox" value="Super 7" checked /><span class="brand-dot" style="background:#16A34A"></span><span class="brand-name">Super 7</span><strong class="brand-count" data-brand-count="Super 7">29</strong></label>
-              <label><input type="checkbox" value="Pronto" checked /><span class="brand-dot" style="background:#DC2626"></span><span class="brand-name">Pronto</span><strong class="brand-count" data-brand-count="Pronto">10</strong></label>
+              <label><input type="checkbox" value="Super 7" checked /><span class="brand-dot" style="background:#16A34A"></span><span class="brand-name">Super 7</span><strong class="brand-count" data-brand-count="Super 7">60</strong></label>
+              <label><input type="checkbox" value="Pronto" checked /><span class="brand-dot" style="background:#DC2626"></span><span class="brand-name">Pronto</span><strong class="brand-count" data-brand-count="Pronto">21</strong></label>
               <label><input type="checkbox" value="StarMart" checked /><span class="brand-dot" style="background:#111827"></span><span class="brand-name">StarMart</span><strong class="brand-count" data-brand-count="StarMart">9</strong></label>
               <label><input type="checkbox" value="Shell Café" checked /><span class="brand-dot" style="background:#F4B400"></span><span class="brand-name">Shell Café</span><strong class="brand-count" data-brand-count="Shell Café">6</strong></label>
             </div>
+            <div id="competitorAuditNote" class="source-note">Capa ajustada: Pronto fue revisado uno a uno con georreferencia. El número de cada marca representa pines visibles en el mapa.</div>
           </div>
 
           <div class="button-row">
@@ -2947,9 +3184,9 @@
     const STORAGE_KEY = "ampmExpansionSiteloComentariosV2";
 
     const COLORS = {
-      A: "#12A05C",
-      B: "#D7A81E",
-      C: "#F58320"
+      A: "#005EA7",
+      B: "#F58320",
+      C: "#64748B"
     };
 
     const COMPETITOR_COLORS = {
@@ -2961,8 +3198,47 @@
       "Shell Café": "#F4B400"
     };
 
+    const COMPETITOR_AUDIT_COUNTS = {
+      "Road Market": {
+            "totalMin": 40,
+            "suffix": "",
+            "label": "40",
+            "basis": "40 pines georreferenciados disponibles en esta versión."
+      },
+      "TenGo": {
+            "totalMin": 6,
+            "suffix": "",
+            "label": "6",
+            "basis": "6 pines georreferenciados en mapa"
+      },
+      "Pronto": {
+            "totalMin": 21,
+            "suffix": "",
+            "label": "21",
+            "basis": "21 tiendas Pronto revisadas y georreferenciadas punto por punto con referencia pública tipo Google Business / plus code o dirección exacta."
+      },
+      "StarMart": {
+            "totalMin": 9,
+            "suffix": "",
+            "label": "9",
+            "basis": "9 pines georreferenciados en mapa"
+      },
+      "Shell Café": {
+            "totalMin": 6,
+            "suffix": "",
+            "label": "6",
+            "basis": "6 pines georreferenciados disponibles en esta versión; Shell reporta estaciones con servicio Shell Café en su buscador."
+      },
+      "Super 7": {
+            "totalMin": 60,
+            "suffix": "",
+            "label": "60",
+            "basis": "60 ubicaciones de la página oficial Super 7; 58 con coordenada exacta desde enlace Como llegar y 2 con revisión operativa."
+      }
+};
+
     const COMPETITOR_POINTS = [
-      {
+{
             "brand": "Road Market",
             "name": "Road Market CC El Hipódromo",
             "lat": 13.6946384,
@@ -2971,7 +3247,7 @@
             "source": "Google Maps compartido por usuario: Road Market | CC El Hipódromo",
             "url": "https://www.google.com/maps/search/?api=1&query=13.6946384,-89.2412365"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Zona Rosa",
             "lat": 13.69197,
@@ -2980,7 +3256,7 @@
             "source": "DLC / Mapcarta: Boulevard del Hipódromo 211, local #6",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Zona%20Rosa%20Boulevard%20del%20Hipodromo%20211%20San%20Salvador"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Diagnóstico Escalón",
             "lat": 13.7078,
@@ -2989,7 +3265,7 @@
             "source": "DLC / Uber Eats: 3ª Calle Poniente y 99 Avenida Norte #7-B",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Diagnostico%20Escalon%203%20Calle%20Poniente%2099%20Avenida%20Norte"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Plaza Emanuel",
             "lat": 13.70178,
@@ -2998,7 +3274,7 @@
             "source": "DLC / Serfinsa: Plaza Emanuel, Calle Conchagua, Cumbres de Cuscatlán",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Plaza%20Emanuel%20Calle%20Conchagua%20Cumbres%20de%20Cuscatlan"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Portal del Casco",
             "lat": 13.6636,
@@ -3007,7 +3283,7 @@
             "source": "DLC: Avenida El Espino, Centro Comercial Estación del Casco",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Portal%20del%20Casco%20Avenida%20El%20Espino"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Salvador del Mundo",
             "lat": 13.7002997,
@@ -3016,7 +3292,7 @@
             "source": "Google Maps compartido por usuario: Centro Financiero Gigante / Road Market Salvador del Mundo",
             "url": "https://www.google.com/maps/search/?api=1&query=13.7002997,-89.2224554"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco Nuevo Cuscatlán",
             "lat": 13.6397,
@@ -3025,7 +3301,7 @@
             "source": "DLC: Urbanización Santa Elena / Loma Linda / Greenside, Nuevo Cuscatlán",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20Nuevo%20Cuscatlan%20Greenside"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Santa Mónica",
             "lat": 13.6800121,
@@ -3034,7 +3310,7 @@
             "source": "Google Maps compartido por usuario: Road Market | Santa Mónica",
             "url": "https://www.google.com/maps/search/?api=1&query=13.6800121,-89.2853638"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market La Mascota",
             "lat": 13.6869,
@@ -3043,7 +3319,7 @@
             "source": "DLC / Banco Hipotecario / Serfinsa: Calle La Mascota, Colonia La Mascota lote #36",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20La%20Mascota%20Calle%20La%20Mascota%2036%20San%20Salvador"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Colonia Médica",
             "lat": 13.71,
@@ -3052,7 +3328,7 @@
             "source": "DLC / Banco Hipotecario / Serfinsa: Av. Dr. Álvarez #301, Urb. La Esperanza",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Colonia%20Medica%20Av%20Dr%20Alvarez%20301%20San%20Salvador"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Jerusalén",
             "lat": 13.69835,
@@ -3061,7 +3337,7 @@
             "source": "Referencia C.C. Plaza Jerusalén / Av. Jerusalén, Urb. Maquilishuat",
             "url": "https://www.google.com/maps/search/?api=1&query=13.69835,-89.24961"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Masferrer",
             "lat": 13.6852273,
@@ -3070,7 +3346,7 @@
             "source": "Google Maps compartido por usuario: Road Market Masferrer",
             "url": "https://www.google.com/maps/search/?api=1&query=13.6852273,-89.2459492"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Altos de la Escalón",
             "lat": 13.71952,
@@ -3079,7 +3355,7 @@
             "source": "DLC / Mapcarta: Prolongación Av. Masferrer y Calle San Antonio Abad",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Altos%20de%20la%20Escalon%20San%20Salvador"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Bernal / Satélite",
             "lat": 13.72156,
@@ -3088,7 +3364,7 @@
             "source": "DLC / Mapcarta: Urbanización Satélite, Avenida Bernal, Polígono U #35",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Bernal%20Urbanizacion%20Satelite%20Avenida%20Bernal"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco Autopista Norte",
             "lat": 13.71759,
@@ -3097,7 +3373,7 @@
             "source": "DLC / Mapcarta: Colonia El Refugio, lote 8, Autopista Norte",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20Autopista%20Norte%20San%20Salvador"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco Constitución",
             "lat": 13.7352,
@@ -3106,7 +3382,7 @@
             "source": "DLC: Calle Zacamil, Boulevard Constitución, San Ramón, Mejicanos",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20Constitucion%20Mejicanos"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco Santa Eugenia",
             "lat": 13.7145,
@@ -3115,7 +3391,7 @@
             "source": "DLC: 15 Calle Oriente, barrio San Miguelito, Col. Santa Eugenia",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20Santa%20Eugenia%20San%20Salvador"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market San Bartolo",
             "lat": 13.7073,
@@ -3124,7 +3400,7 @@
             "source": "DLC: Boulevard San Bartolo, Quinta Las Delicias #2, Ilopango",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20San%20Bartolo%20Ilopango"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Soyapango",
             "lat": 13.7011,
@@ -3133,7 +3409,7 @@
             "source": "DLC: Boulevard del Ejército Nacional, Km. 2, Soyapango",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Soyapango%20Boulevard%20del%20Ejercito%20Km%202"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco Panamericana",
             "lat": 13.6993,
@@ -3142,7 +3418,7 @@
             "source": "DLC: Km 10 1/2 carretera Panamericana, Ilopango",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20Panamericana%20Ilopango"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco Integración",
             "lat": 13.7792,
@@ -3151,7 +3427,7 @@
             "source": "DLC / ArchivoBiz: Plaza Integración, carretera a San Salvador, Apopa",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20Integracion%20Apopa"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco Intercomplex",
             "lat": 13.783,
@@ -3160,7 +3436,7 @@
             "source": "DLC: Km. 26.9, Carretera Panamericana, Intercomplex, San Juan Opico",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20Intercomplex%20San%20Juan%20Opico"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco American Park",
             "lat": 13.808,
@@ -3169,7 +3445,7 @@
             "source": "DLC: Carretera a Santa Ana, km 36 1/2, American Park",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20American%20Park%20El%20Salvador"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Surf City / El Tunco",
             "lat": 13.4941662,
@@ -3178,7 +3454,7 @@
             "source": "Google Maps compartido por usuario: Road market el tunco",
             "url": "https://www.google.com/maps/search/?api=1&query=13.4941662,-89.3835249"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Comalapa",
             "lat": 13.4409,
@@ -3187,7 +3463,7 @@
             "source": "DLC: Aeropuerto Internacional Óscar A. Romero, local 2-B2",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Comalapa%20Aeropuerto%20Internacional%20El%20Salvador"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Montelimar",
             "lat": 13.548,
@@ -3196,7 +3472,7 @@
             "source": "DLC: Km. 23.5, Cantón La Esperanza, Olocuilta",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Montelimar%20Olocuilta"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Providencia",
             "lat": 13.515,
@@ -3205,7 +3481,7 @@
             "source": "DLC: Carretera a Comalapa, Km 30, Cantón Cupinco, Olocuilta",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Providencia%20Olocuilta"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco La Flecha",
             "lat": 13.436,
@@ -3214,7 +3490,7 @@
             "source": "DLC: Km. 42, Carretera del Litoral, desvío a La Herradura",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20La%20Flecha%20Santiago%20Nonualco"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Plaza Mónaco",
             "lat": 13.477,
@@ -3223,7 +3499,7 @@
             "source": "DLC: Plaza Mónaco, Calle España / Av Ecuador, San Miguel",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Plaza%20Monaco%20San%20Miguel"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market San Antonio Silva",
             "lat": 13.482,
@@ -3232,7 +3508,7 @@
             "source": "DLC: Km. 158.5, Carretera Panamericana, Cantón San Antonio Silva",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20San%20Antonio%20Silva%20San%20Miguel"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market La Montañita",
             "lat": 13.345,
@@ -3241,7 +3517,7 @@
             "source": "DLC: Carretera El Litoral, Km. 118, Santa María, Usulután",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20La%20Montanita%20Usulutan"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market El Paraíso",
             "lat": 14.094,
@@ -3250,7 +3526,7 @@
             "source": "DLC: Carretera a Chalatenango, Km. 61.5, Cantón Agua Helada",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20El%20Paraiso%20Chalatenango"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco Santo Domingo",
             "lat": 13.671,
@@ -3259,7 +3535,7 @@
             "source": "DLC: Km. 43 y 44, Carretera Panamericana, desvío Santo Domingo",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20Santo%20Domingo%20San%20Vicente"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Desvío San Vicente",
             "lat": 13.659,
@@ -3268,7 +3544,7 @@
             "source": "DLC: Km. 55.5 Carretera Panamericana, desvío San Vicente",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Desvio%20San%20Vicente"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Coatepeque",
             "lat": 13.884,
@@ -3277,7 +3553,7 @@
             "source": "DLC: Carretera Lago de Coatepeque, Km. 6.5, Santa Ana",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Coatepeque%20Santa%20Ana"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Los Limones",
             "lat": 13.917,
@@ -3286,7 +3562,7 @@
             "source": "DLC: Cantón La Joya, Hacienda Los Limones, Coatepeque",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Los%20Limones%20Coatepeque%20Santa%20Ana"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Texaco El Palmar",
             "lat": 13.999,
@@ -3295,7 +3571,7 @@
             "source": "DLC: 14 Av. Sur y 31 Calle Pte., Santa Ana",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Texaco%20El%20Palmar%20Santa%20Ana"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market Kilo 5",
             "lat": 13.599,
@@ -3304,7 +3580,7 @@
             "source": "DLC: Km. 81.5, Carretera a La Hachadura, Acajutla",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20Kilo%205%20Acajutla"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market La Campana",
             "lat": 13.588,
@@ -3313,7 +3589,7 @@
             "source": "DLC: Carretera a Acajutla, Km. 73, Lotificación San Julián",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20La%20Campana%20Acajutla"
       },
-      {
+{
             "brand": "Road Market",
             "name": "Road Market El Espino",
             "lat": 13.945,
@@ -3322,7 +3598,7 @@
             "source": "DLC: Km. 99.5, Carretera a Santa Ana, Colonia Santa María",
             "url": "https://www.google.com/maps/search/?api=1&query=Road%20Market%20El%20Espino%20Ahuachapan"
       },
-      {
+{
             "brand": "TenGo",
             "name": "TenGo Plaza Malta",
             "lat": 13.66698,
@@ -3331,7 +3607,7 @@
             "source": "Plaza Malta / Mapcarta: TenGo Plaza Malta",
             "url": "https://www.google.com/maps/search/?api=1&query=TenGo%20Todo%20Market%20Plaza%20Malta"
       },
-      {
+{
             "brand": "TenGo",
             "name": "TenGo Santa Elena / Plaza Madero",
             "lat": 13.66946,
@@ -3340,7 +3616,7 @@
             "source": "Mapcarta/OpenStreetMap: TenGo Santa Elena; Banco Hipotecario confirma Blvd. Santa Elena, parqueo anexo Plaza Madero.",
             "url": "https://www.google.com/maps/search/?api=1&query=13.66946,-89.25585"
       },
-      {
+{
             "brand": "TenGo",
             "name": "TenGo Plaza Las Azaleas",
             "lat": 13.69686,
@@ -3351,14 +3627,14 @@
       },
       {
             "brand": "TenGo",
-            "name": "TenGo Plaza Los Sueños",
-            "lat": 13.6449,
-            "lng": -89.2661,
-            "status": "Aprox.",
-            "source": "Linktree TenGo + Plaza Los Sueños, Nuevo Cuscatlán",
-            "url": "https://www.google.com/maps/search/?api=1&query=TenGo%20Plaza%20Los%20Suenos%20Nuevo%20Cuscatlan"
+            "name": "TenGo Los Sueños",
+            "lat": 13.6691,
+            "lng": -89.2532,
+            "status": "Verificado",
+            "source": "Revisión visual sobre mapa base: TenGo Los Sueños en zona Boulevard Santa Elena / Ciudad Vieja / Av. Los Castaños.",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6691,-89.2532"
       },
-      {
+{
             "brand": "TenGo",
             "name": "TenGo El Tunco",
             "lat": 13.4941,
@@ -3367,7 +3643,7 @@
             "source": "Linktree TenGo: sucursal El Tunco; coordenada aproximada zona turística",
             "url": "https://www.google.com/maps/search/?api=1&query=TenGo%20El%20Tunco%20El%20Salvador"
       },
-      {
+{
             "brand": "TenGo",
             "name": "TenGo The Spot / Surf City",
             "lat": 13.48694,
@@ -3376,340 +3652,7 @@
             "source": "Mapcarta / OpenStreetMap: TenGo Todo Market Surf City",
             "url": "https://www.google.com/maps/search/?api=1&query=13.48694,-89.34388"
       },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Escalón",
-            "lat": 13.7021111,
-            "lng": -89.2311944,
-            "status": "Verificado",
-            "source": "Super 7 oficial: link 'Como llegar' de SUPER 7 ESCALON",
-            "url": "https://www.google.com/maps/search/?api=1&query=13.7021111,-89.2311944"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Escalonia",
-            "lat": 13.7043,
-            "lng": -89.2345,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Av. Napoleón Viera Altamirano y 75 Avenida Norte",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Escalonia%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Deportivo",
-            "lat": 13.6976,
-            "lng": -89.22757,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Alameda Manuel Enrique Araujo entre calle N1 y N2",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Deportivo%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Roosevelt",
-            "lat": 13.7013,
-            "lng": -89.2187,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Alameda Roosevelt y 49 Avenida Norte",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Roosevelt%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 DIDEA",
-            "lat": 13.6981,
-            "lng": -89.2049,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Calle Rubén Darío y 25 Avenida Sur",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20DIDEA%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 La Rábida",
-            "lat": 13.71255,
-            "lng": -89.1849,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: 29 Calle Oriente y 10a Avenida Norte",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20La%20Rabida%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Universidad",
-            "lat": 13.7183,
-            "lng": -89.2056,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: 31 Av. Norte y Boulevard Universitario",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Universidad%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 San Antonio Abad",
-            "lat": 13.7213,
-            "lng": -89.2232,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Prolongación Alameda Juan Pablo II y Blvd. Constitución",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20San%20Antonio%20Abad%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 La Gloria",
-            "lat": 13.7493,
-            "lng": -89.2388,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Boulevard Constitución y Calle al Volcán",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20La%20Gloria%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Concepción",
-            "lat": 13.7107,
-            "lng": -89.2061,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Calle Concepción y Alameda Juan Pablo II",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Concepcion%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Palermo / Los Próceres",
-            "lat": 13.6837,
-            "lng": -89.2362,
-            "status": "Verificado",
-            "source": "Super 7 oficial: link 'Como llegar' de SUPER 7 PALERMO, Final Blvd. Los Próceres",
-            "url": "https://www.google.com/maps/search/?api=1&query=13.6837,-89.2362"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Merliot",
-            "lat": 13.6719,
-            "lng": -89.27618,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Carretera a Santa Tecla y Boulevard Merliot",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Merliot"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Santa Tecla",
-            "lat": 13.6748,
-            "lng": -89.2882,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: 4ta Calle Oriente y Avenida San Martín",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Santa%20Tecla"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Paseo el Carmen",
-            "lat": 13.67543,
-            "lng": -89.28782,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: C. José Ciriaco López, Santa Tecla",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Paseo%20el%20Carmen"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Santa Elena",
-            "lat": 13.6726,
-            "lng": -89.2548,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Carretera Panamericana y Boulevard Santa Elena",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Santa%20Elena%20Antiguo%20Cuscatlan"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Madreselva",
-            "lat": 13.6728,
-            "lng": -89.2572,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Boulevard Poma, Pasaje H Sur y Av. El Espino",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Madreselva%20Antiguo%20Cuscatlan"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Centro Histórico",
-            "lat": 13.6998,
-            "lng": -89.19058,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Edificio Abrego, 3a Av. Norte y Calle Arce",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Centro%20Historico%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Presidencial",
-            "lat": 13.6886,
-            "lng": -89.1902,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Boulevard Venezuela, 6 Av. Sur, Pasaje Brasil",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Presidencial%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Morazán S.S.",
-            "lat": 13.698,
-            "lng": -89.1439,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Boulevard del Ejército Nacional Km 6",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Morazan%20SS%20San%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Ilopango",
-            "lat": 13.6995,
-            "lng": -89.1095,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Ilopango",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Ilopango"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 San Martín",
-            "lat": 13.7334,
-            "lng": -89.05,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Carretera Panamericana Km 18",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20San%20Martin%20El%20Salvador"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Ciudad Dorada",
-            "lat": 13.649,
-            "lng": -89.121,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Cantón El Ciprés, Km 14 1/2, Santo Tomás",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Ciudad%20Dorada%20Santo%20Tomas"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Mejicanos",
-            "lat": 13.7362,
-            "lng": -89.2139,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Calle a Mariona, Km 5 1/2",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Mejicanos"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Apopa",
-            "lat": 13.7955,
-            "lng": -89.1777,
-            "status": "Verificado",
-            "source": "Super 7 oficial: link 'Como llegar' de SUPER 7 APOPA",
-            "url": "https://www.google.com/maps/search/?api=1&query=13.7955,-89.1777"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 San Nicolás",
-            "lat": 13.7924,
-            "lng": -89.1811,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Km 14 1/2 Carretera Troncal del Norte",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20San%20Nicolas%20Troncal%20del%20Norte"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 El Desvío / Lourdes",
-            "lat": 13.7382,
-            "lng": -89.3635,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Km 22 1/2 Carretera Panamericana, Lourdes",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20El%20Desvio%20Lourdes%20Colon"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Zaragoza",
-            "lat": 13.589,
-            "lng": -89.2898,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Km 22.3 Carretera al Puerto de La Libertad",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Zaragoza%20La%20Libertad"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Mar",
-            "lat": 13.4926,
-            "lng": -89.3164,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Carretera Puerto de La Libertad Km 32",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Mar%20La%20Libertad"
-      },
-      {
-            "brand": "Super 7",
-            "name": "Super 7 Aeropuerto",
-            "lat": 13.45,
-            "lng": -89.057,
-            "status": "Aprox.",
-            "source": "Super 7 oficial: Km 39, Autopista a Comalapa",
-            "url": "https://www.google.com/maps/search/?api=1&query=Super%207%20Aeropuerto%20Comalapa"
-      },
-      {
-            "brand": "Pronto",
-            "name": "Pronto UNO Los Héroes",
-            "lat": 13.7078,
-            "lng": -89.21131,
-            "status": "Verificado",
-            "source": "ArchivoBiz: PQ5Q+4FG, Blvd. de Los Héroes",
-            "url": "https://www.google.com/maps/search/?api=1&query=Pronto%20UNO%20Los%20Heroes%20San%20Salvador"
-      },
-      {
-            "brand": "Pronto",
-            "name": "Pronto UNO Escalón",
-            "lat": 13.7043,
-            "lng": -89.2399,
-            "status": "Aprox.",
-            "source": "Comelongo: UNO Escalón, Paseo General Escalón",
-            "url": "https://www.google.com/maps/search/?api=1&query=Pronto%20UNO%20Escalon%20San%20Salvador"
-      },
-      {
-            "brand": "Pronto",
-            "name": "Pronto Santa Elena",
-            "lat": 13.666,
-            "lng": -89.254,
-            "status": "Aprox.",
-            "source": "Nota pública UNO: primeras tiendas Pronto Santa Elena y Arboleda",
-            "url": "https://www.google.com/maps/search/?api=1&query=Pronto%20Santa%20Elena%20El%20Salvador"
-      },
-      {
-            "brand": "Pronto",
-            "name": "Pronto Arboleda",
-            "lat": 13.6722,
-            "lng": -89.2525,
-            "status": "Aprox.",
-            "source": "Nota pública UNO: primeras tiendas Pronto Santa Elena y Arboleda",
-            "url": "https://www.google.com/maps/search/?api=1&query=Pronto%20Arboleda%20El%20Salvador"
-      },
-      {
-            "brand": "Pronto",
-            "name": "Pronto La Sultana",
-            "lat": 13.6765,
-            "lng": -89.2476,
-            "status": "Aprox.",
-            "source": "El Metropolitano: Pronto La Sultana, Antiguo Cuscatlán",
-            "url": "https://www.google.com/maps/search/?api=1&query=Pronto%20La%20Sultana%20Antiguo%20Cuscatlan"
-      },
-      {
-            "brand": "Pronto",
-            "name": "Pronto Plaza Cafetalón",
-            "lat": 13.674,
-            "lng": -89.2955,
-            "status": "Aprox.",
-            "source": "YSKL: Pronto stand-alone El Cafetalón, Santa Tecla",
-            "url": "https://www.google.com/maps/search/?api=1&query=Pronto%20El%20Cafetal%C3%B3n%20Santa%20Tecla"
-      },
-      {
-            "brand": "Pronto",
-            "name": "Pronto San Salvador / PQ7R",
-            "lat": 13.71448,
-            "lng": -89.20875,
-            "status": "Verificado",
-            "source": "Referencia pública de plus code PQ7R+QGR",
-            "url": "https://www.google.com/maps/search/?api=1&query=Pronto%20PQ7R%2BQGR%20San%20Salvador"
-      },
-      {
-            "brand": "Pronto",
-            "name": "Pronto Metrocentro / Los Héroes zona",
-            "lat": 13.7072,
-            "lng": -89.2058,
-            "status": "Aprox.",
-            "source": "UNO / búsqueda pública zona Los Héroes",
-            "url": "https://www.google.com/maps/search/?api=1&query=Pronto%20Metrocentro%20San%20Salvador"
-      },
-      {
+{
             "brand": "StarMart",
             "name": "StarMart La Skina",
             "lat": 13.6819,
@@ -3718,7 +3661,7 @@
             "source": "Uber Eats / Waze: La Skina, Finca San Rafael / Calle Real Santa Tecla",
             "url": "https://www.google.com/maps/search/?api=1&query=StarMart%20La%20Skina%20Santa%20Tecla"
       },
-      {
+{
             "brand": "StarMart",
             "name": "StarMart Modelo SS",
             "lat": 13.6925,
@@ -3727,7 +3670,7 @@
             "source": "Uber Eats: StarMart Modelo SS",
             "url": "https://www.google.com/maps/search/?api=1&query=StarMart%20Modelo%20SS%20San%20Salvador"
       },
-      {
+{
             "brand": "StarMart",
             "name": "StarMart / StarMark Versalles",
             "lat": 13.67799,
@@ -3736,7 +3679,7 @@
             "source": "Mapcarta / OpenStreetMap: StarMark, Lomas de Versalles",
             "url": "https://www.google.com/maps/search/?api=1&query=StarMart%20Lomas%20de%20Versalles%20San%20Salvador"
       },
-      {
+{
             "brand": "StarMart",
             "name": "StarMart Texaco Juan Pablo II",
             "lat": 13.7086,
@@ -3745,7 +3688,7 @@
             "source": "Concorda: Texaco Juan Pablo con tienda StarMart",
             "url": "https://www.google.com/maps/search/?api=1&query=StarMart%20Texaco%20Juan%20Pablo%20II%20San%20Salvador"
       },
-      {
+{
             "brand": "StarMart",
             "name": "StarMart Texaco Aeropuerto",
             "lat": 13.4507,
@@ -3754,25 +3697,7 @@
             "source": "Waze: StarMart Texaco Aeropuerto, RN5/Autopista Comalapa",
             "url": "https://www.google.com/maps/search/?api=1&query=StarMart%20Texaco%20Aeropuerto%20RN5%20Comalapa"
       },
-      {
-            "brand": "Pronto",
-            "name": "Pronto UNO Los Próceres / Lomas de San Francisco",
-            "lat": 13.6832,
-            "lng": -89.2289,
-            "status": "Aprox.",
-            "source": "GasolinaSV: UNO Los Próceres con tienda, Urb. Lomas de San Francisco, costado norte del Boulevard Los Próceres, contiguo Peugeot.",
-            "url": "https://www.google.com/maps/search/?api=1&query=UNO%20Los%20Proceres%20Lomas%20de%20San%20Francisco%20Peugeot%20San%20Salvador"
-      },
-      {
-            "brand": "Pronto",
-            "name": "Pronto UNO Autopista Sur / Blvr. Los Próceres",
-            "lat": 13.6842,
-            "lng": -89.2186,
-            "status": "Aprox.",
-            "source": "Cybo/TodosBiz: UNO gas station Autopista Sur, MQMJ+QF3, Blvr. Los Próceres.",
-            "url": "https://www.google.com/maps/search/?api=1&query=UNO%20gas%20station%20Autopista%20Sur%20MQMJ%2BQF3%20Blvr%20Los%20Proceres%20San%20Salvador"
-      },
-      {
+{
             "brand": "StarMart",
             "name": "StarMart Texaco Ateos",
             "lat": 13.74007,
@@ -3781,7 +3706,7 @@
             "source": "Mapcarta/OpenStreetMap: Texaco Ateos 13.74007,-89.42413; referencias BAC/Promerica confirman Texaco Ateos en Km 30 carretera a Sonsonate.",
             "url": "https://www.google.com/maps/search/?api=1&query=13.74007,-89.42413"
       },
-      {
+{
             "brand": "StarMart",
             "name": "StarMart Texaco El Paraisal",
             "lat": 13.7377778,
@@ -3790,7 +3715,7 @@
             "source": "EIA MARN Texaco El Paraísal: latitud 13°44'16\"N, longitud 89°42'22\"W; tienda de conveniencia en estación.",
             "url": "https://www.google.com/maps/search/?api=1&query=13.7377778,-89.7061111"
       },
-      {
+{
             "brand": "StarMart",
             "name": "StarMart Texaco Modelo Sonsonate",
             "lat": 13.71674,
@@ -3799,7 +3724,7 @@
             "source": "Mapcarta/OpenStreetMap: Texaco Los Leones 13.71674,-89.72331 y referencia cercana Star Mart; GasolinaSV/Defensoría confirman Texaco Modelo Sonsonate en Blvd. Oscar Osorio salida a Acajutla.",
             "url": "https://www.google.com/maps/search/?api=1&query=13.71674,-89.72331"
       },
-      {
+{
             "brand": "Shell Café",
             "name": "Shell Café Los Héroes",
             "lat": 13.7076778,
@@ -3808,7 +3733,7 @@
             "source": "Shell Finder confirma Shell Café en Los Héroes; Geoview ubica Shell Los Héroes en 13°42'27.64N, 89°12'41.54W.",
             "url": "https://www.google.com/maps/search/?api=1&query=13.7076778,-89.2115389"
       },
-      {
+{
             "brand": "Shell Café",
             "name": "Shell Café El Pedregal",
             "lat": 13.678611,
@@ -3817,7 +3742,7 @@
             "source": "Shell Finder confirma Shell Café en El Pedregal; Waze/Tripadvisor lo ubican en Calle El Pedregal, entre La Gran Vía y Las Cascadas.",
             "url": "https://www.google.com/maps/search/?api=1&query=13.678611,-89.255000"
       },
-      {
+{
             "brand": "Shell Café",
             "name": "Shell Café Chiltiupán",
             "lat": 13.67978,
@@ -3826,7 +3751,7 @@
             "source": "Nota de inauguración confirma Shell Café #5 en Shell Chiltiupán; referencias públicas lo ubican en Calle Chiltiupán y Av. El Balsamar, Jardines de Merliot.",
             "url": "https://www.google.com/maps/search/?api=1&query=13.679780,-89.274120"
       },
-      {
+{
             "brand": "Shell Café",
             "name": "Shell Café El Coyolito",
             "lat": 14.013,
@@ -3835,7 +3760,7 @@
             "source": "Shell Finder confirma Shell Café en El Coyolito; Waze/SSF lo ubican en CA-4/Carretera Troncal del Norte, Km 48.5, Cantón Quitasol, Tejutla.",
             "url": "https://www.google.com/maps/search/?api=1&query=14.013000,-89.080500"
       },
-      {
+{
             "brand": "Shell Café",
             "name": "Shell Café Caluco",
             "lat": 13.7395,
@@ -3844,7 +3769,7 @@
             "source": "Shell Finder confirma Shell Café en Caluco; ubicación pública sobre Carretera CA-08 de Sonsonate a San Salvador, zona Izalco/Caluco.",
             "url": "https://www.google.com/maps/search/?api=1&query=13.739500,-89.637000"
       },
-      {
+{
             "brand": "Shell Café",
             "name": "Shell Café Vía del Mar",
             "lat": 13.6535625,
@@ -3853,7 +3778,7 @@
             "source": "Google Maps compartido por usuario: Shell Cafe | Vía del Mar",
             "url": "https://www.google.com/maps/search/?api=1&query=13.6535625,-89.2802969"
       },
-      {
+{
             "brand": "StarMart",
             "name": "StarMart Masferrer",
             "lat": 13.705482,
@@ -3861,8 +3786,737 @@
             "status": "Verificado",
             "source": "Google Maps compartido por usuario: StarMart",
             "url": "https://www.google.com/maps/search/?api=1&query=13.705482,-89.249538"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Aeropuerto",
+            "lat": 13.4822,
+            "lng": -89.0667,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Km 39, Autopista a Comalapa; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.4822,-89.0667"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Mar",
+            "lat": 13.4926,
+            "lng": -89.3164,
+            "status": "Por validar",
+            "source": "Super 7 oficial: Carretera Puerto de La Libertad, Km 32; coordenada pendiente de validación por duplicidad/ausencia de enlace exacto",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.4926,-89.3164"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Universidad",
+            "lat": 13.7168889,
+            "lng": -89.2061111,
+            "status": "Verificado",
+            "source": "Super 7 oficial: 31 Av. Norte y Boulevard Universitario; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7168889,-89.2061111"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Guazapa",
+            "lat": 13.8778,
+            "lng": -89.1733,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Barrio San José, Guazapa; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.8778,-89.1733"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Miraflores",
+            "lat": 13.4752,
+            "lng": -89.0498,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carr. El Litoral Km 41.7, Autopista a Zacatecoluca; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.4752,-89.0498"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 La Loma",
+            "lat": 13.7367,
+            "lng": -89.0474,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera Panamericana, Km 19, San Martín; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7367,-89.0474"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Apopa",
+            "lat": 13.7955,
+            "lng": -89.1777,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carr. Troncal del Norte y Carr. a Quezaltepeque; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7955,-89.1777"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Didea",
+            "lat": 13.6993,
+            "lng": -89.2045,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Calle Rubén Darío y 25 Avenida Sur; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6993,-89.2045"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Deportivo",
+            "lat": 13.6973889,
+            "lng": -89.2276111,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Alameda Manuel Enrique Araujo entre calle N1 y N2; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6973889,-89.2276111"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 La Rábida",
+            "lat": 13.7126,
+            "lng": -89.185,
+            "status": "Verificado",
+            "source": "Super 7 oficial: 29 Calle Oriente y 10a. Avenida Norte; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7126,-89.185"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Madreselva",
+            "lat": 13.6614,
+            "lng": -89.2549,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Boulevard Poma, Pasaje H Sur y Av. El Espino; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6614,-89.2549"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 San Antonio Abad",
+            "lat": 13.708,
+            "lng": -89.2271,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Prolong. Alam. Juan Pablo II y Blvd. Constitución; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.708,-89.2271"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 La Gloria",
+            "lat": 13.7351,
+            "lng": -89.2176,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Boulevard Constitución y Calle al Volcán; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7351,-89.2176"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Concepción",
+            "lat": 13.7016,
+            "lng": -89.1827,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Calle Concepción y Alameda Juan Pablo II; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7016,-89.1827"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Palermo",
+            "lat": 13.6837,
+            "lng": -89.2362,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Final Blvd. Los Próceres, Col. Manuel José Arce; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6837,-89.2362"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Merliot",
+            "lat": 13.6709,
+            "lng": -89.2636,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera a Santa Tecla y Boulevard Merliot; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6709,-89.2636"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 San Nicolás",
+            "lat": 13.8067,
+            "lng": -89.1708,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Km 14 1/2, Carretera Troncal del Norte; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.8067,-89.1708"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Ciudad Heroica",
+            "lat": 13.9659,
+            "lng": -89.5664,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera a San Salvador, Km 62; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.9659,-89.5664"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Independencia",
+            "lat": 13.9892,
+            "lng": -89.5578,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Avenida Independencia y 11 Calle Oriente; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.9892,-89.5578"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Sonsonate",
+            "lat": 13.7217,
+            "lng": -89.7194,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Boulevard Las Palmeras, Colonia Santa Marta; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7217,-89.7194"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Nahuilingo",
+            "lat": 13.7098,
+            "lng": -89.7191,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Bypass San Salvador-Acajutla, Nahuilingo; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7098,-89.7191"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 El Desvío",
+            "lat": 13.7181,
+            "lng": -89.3558,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Km 22 1/2 Carretera Panamericana, Lourdes; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7181,-89.3558"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Santa Tecla",
+            "lat": 13.6719,
+            "lng": -89.2877,
+            "status": "Verificado",
+            "source": "Super 7 oficial: 4ta. Calle Oriente y Avenida San Martín; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6719,-89.2877"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Pasatiempo",
+            "lat": 13.7565,
+            "lng": -89.3668,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Km 26 1/2, Carretera a Santa Ana; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7565,-89.3668"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Metapán",
+            "lat": 14.3208,
+            "lng": -89.4448,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera a frontera Anguiatú, Col. Brisas del Sur; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=14.3208,-89.4448"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Sensuntepeque",
+            "lat": 13.8697,
+            "lng": -88.6263,
+            "status": "Verificado",
+            "source": "Super 7 oficial: 3° Avenida Norte, Sensuntepeque; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.8697,-88.6263"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Agua Caliente",
+            "lat": 13.6202,
+            "lng": -87.8569,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera Panamericana, Desvío de Anamorós; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6202,-87.8569"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Las Conchas",
+            "lat": 13.5681,
+            "lng": -88.0917,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Km 147, Carretera Ruta Militar, Cantón Las Conchas; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.5681,-88.0917"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 San Andrés",
+            "lat": 13.7657,
+            "lng": -89.3705,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Km. 28, Carretera a Santa Ana; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7657,-89.3705"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Agua Salada",
+            "lat": 13.5803,
+            "lng": -87.8193,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Ruta Militar y Carretera Panamericana; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.5803,-87.8193"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 El Triángulo",
+            "lat": 13.4873,
+            "lng": -88.1863,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Calle Roosevelt y final 12 Calle Poniente; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.4873,-88.1863"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Litoral",
+            "lat": 13.3446,
+            "lng": -88.4502,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera al Litoral Km. 110; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.3446,-88.4502"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Oriental",
+            "lat": 13.4923,
+            "lng": -88.1929,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera Panamericana Km 136; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.4923,-88.1929"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 El Delirio",
+            "lat": 13.3304,
+            "lng": -88.1486,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera al Litoral Km 143 1/2; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.3304,-88.1486"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Escalón",
+            "lat": 13.7021111,
+            "lng": -89.2311944,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Paseo General Escalón y 73 Avenida Norte; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7021111,-89.2311944"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 La Garita",
+            "lat": 13.7101,
+            "lng": -89.1731,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Avenida Juan Bertis y Calle 5 de Noviembre; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7101,-89.1731"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Escalonia",
+            "lat": 13.7087,
+            "lng": -89.2321,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Av. Napoleón Viera Altamirano y 75 Avenida Norte; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7087,-89.2321"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Morazán S.S.",
+            "lat": 13.6966,
+            "lng": -89.1396,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Boulevard del Ejército Nacional Km 6; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6966,-89.1396"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Presidencial",
+            "lat": 13.6928,
+            "lng": -89.189,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Boulevard Venezuela, 6 Av. Sur, Pasaje Brasil; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6928,-89.189"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Roosevelt",
+            "lat": 13.7009,
+            "lng": -89.2158,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Alameda Roosevelt y 49 Avenida Norte; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7009,-89.2158"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 San Martín",
+            "lat": 13.7336,
+            "lng": -89.061,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera Panamericana Km 18; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7336,-89.061"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Santa Elena",
+            "lat": 13.6744,
+            "lng": -89.252,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera Panamericana y Boulevard Santa Elena; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6744,-89.252"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Vidales",
+            "lat": 13.6976,
+            "lng": -89.111,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Polígono Uno, Block F, Senda 1, Colonia San Rafael; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6976,-89.111"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Ilopango",
+            "lat": 13.6976,
+            "lng": -89.111,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Polígono Uno, Block F, Senda 1, Colonia San Rafael; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6976,-89.111"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Nueva Granada",
+            "lat": 13.56036,
+            "lng": -88.45399,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carr. Panamericana, Colonia Andalucía, El Triunfo; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.56036,-88.45399"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 El Carmen",
+            "lat": 13.36975,
+            "lng": -88.0127,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carr. Panamericana, El Caulotillo, El Carmen; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.36975,-88.0127"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Sonzacate",
+            "lat": 13.7381,
+            "lng": -89.7094,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carr. Sonsonate-SS y Carr. Sonsonate-Sta. Ana; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7381,-89.7094"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Costa Del Sol",
+            "lat": 13.3703,
+            "lng": -89.0244,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera a San Marcelino, Km 58; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.3703,-89.0244"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Carcagua",
+            "lat": 14.0043,
+            "lng": -89.5418,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Kilómetro 67 1/2, Carretera by pass a Metapán; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=14.0043,-89.5418"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Mejicanos",
+            "lat": 13.7385,
+            "lng": -89.1928,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Calle a Mariona, Km. 5 1/2; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.7385,-89.1928"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Zaragoza",
+            "lat": 13.5807,
+            "lng": -89.2866,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Km 22.3 de la Carretera al Puerto de La Libertad; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.5807,-89.2866"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 La Libertad",
+            "lat": 13.4877,
+            "lng": -89.3467,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera Litoral, Playa El Cocal, Res. San Blas; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.4877,-89.3467"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Texistepeque",
+            "lat": 14.118737,
+            "lng": -89.49898,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera Santa Ana-Metapán; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=14.118737,-89.49898"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Ciudad Dorada",
+            "lat": 13.65502,
+            "lng": -89.149676,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Cantón El Ciprés, Kilómetro 14 1/2, Santo Tomás; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.65502,-89.149676"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Ichanmichen",
+            "lat": 13.504878,
+            "lng": -88.87494,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Barrio El Carmen, Décima Avenida Sur; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.504878,-88.87494"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Nueva Esperanza",
+            "lat": 13.39146,
+            "lng": -88.65488,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera Litoral, Km 92, Cantón Tierra Blanca, Jiquilisco, Usulután; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.39146,-88.65488"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Paraíso",
+            "lat": 13.999146,
+            "lng": -89.605253,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Porción Tercera, Cantón Comecayo, Santa Ana; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.999146,-89.605253"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Metalio",
+            "lat": 13.650073,
+            "lng": -89.891017,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Carretera a la Hachadura, Km 91, Caserío la Supervisión, Lote 36, Metalío, Acajutla; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.650073,-89.891017"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Centro Histórico",
+            "lat": 13.699243,
+            "lng": -89.193305,
+            "status": "Verificado",
+            "source": "Super 7 oficial: Edificio Abrego, 3a Av. Norte y Calle Arce, San Salvador; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.699243,-89.193305"
+      },
+{
+            "brand": "Super 7",
+            "name": "Super 7 Paseo El Carmen",
+            "lat": 13.6743239,
+            "lng": -89.2860086,
+            "status": "Verificado",
+            "source": "Super 7 oficial: C. José Ciriaco López, Santa Tecla; coordenada tomada del enlace oficial Como llegar",
+            "url": "https://www.google.com/maps/search/?api=1&query=13.6743239,-89.2860086"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto • UNO Los Héroes",
+            "lat": 13.7078125,
+            "lng": -89.2112969,
+            "status": "Verificado",
+            "source": "Google Business: plus code PQ5Q+4FG, Blvd. de Los Héroes, San Salvador",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPQ5Q%2B4FG%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Centroamérica",
+            "lat": 13.7143625,
+            "lng": -89.2085781,
+            "status": "Verificado",
+            "source": "Google Business: plus code PQ7R+PHV, San Salvador",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPQ7R%2BPHV%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto UNO Miramonte",
+            "lat": 13.7026125,
+            "lng": -89.2162031,
+            "status": "Verificado",
+            "source": "Google Business: plus code PQ3M+2GV, UNO Miramonte, San Salvador",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPQ3M%2B2GV%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Prolongación Juan Pablo II",
+            "lat": 13.7041625,
+            "lng": -89.2172344,
+            "status": "Verificado",
+            "source": "Google Business: plus code PQ3M+M46, Alameda Juan Pablo II, San Salvador",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPQ3M%2BM46%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Minix Escalón",
+            "lat": 13.7037375,
+            "lng": -89.2350156,
+            "status": "Verificado",
+            "source": "Google Business: plus code PQ37+FXX, San Salvador",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPQ37%2BFXX%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Granjita",
+            "lat": 13.7148125,
+            "lng": -89.2233594,
+            "status": "Verificado",
+            "source": "Google Business: plus code PQ7G+WMC, San Salvador",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPQ7G%2BWMC%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Café • San Carlos",
+            "lat": 13.7165375,
+            "lng": -89.1922344,
+            "status": "Verificado",
+            "source": "Google Business: plus code PR85+J46, San Salvador",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPR85%2BJ46%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Soyapango / Calle Venecia",
+            "lat": 13.7146125,
+            "lng": -89.1417969,
+            "status": "Verificado",
+            "source": "Google Business: plus code PV75+R7W, C. Venecia, Soyapango",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPV75%2BR7W%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Autopista de Oro",
+            "lat": 13.7195125,
+            "lng": -89.0941406,
+            "status": "Verificado",
+            "source": "Google Business: plus code PW94+R85, Autopista de Oro",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPW94%2BR85%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto San Marcos",
+            "lat": 13.6607875,
+            "lng": -89.1899219,
+            "status": "Verificado",
+            "source": "Google Business: plus code MR66+828, San Marcos",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GMR66%2B828%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Alberto Masferrer",
+            "lat": 13.7190875,
+            "lng": -89.2416094,
+            "status": "Verificado",
+            "source": "Google Business: plus code PQ95+J9J, Prolongación Ave. Alberto Masferrer, San Salvador",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPQ95%2BJ9J%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto tienda",
+            "lat": 13.6991625,
+            "lng": -89.2264531,
+            "status": "Verificado",
+            "source": "Google Business: plus code MQXF+MC7, San Salvador",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GMQXF%2BMC7%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Versailles",
+            "lat": 13.7885875,
+            "lng": -89.3589219,
+            "status": "Verificado",
+            "source": "Google Business: plus code QJQR+CCP, Blvd. Campos Elíseos, San Juan Opico",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GQJQR%2BCCP%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Gasolinera UNO y Tienda Pronto Sitio del Niño",
+            "lat": 13.7886875,
+            "lng": -89.3588125,
+            "status": "Verificado",
+            "source": "Google Business: plus code QJQR+FF, Sitio del Niño",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GQJQR%2BFF%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto • UNO Marsella",
+            "lat": 13.7951375,
+            "lng": -89.3445469,
+            "status": "Verificado",
+            "source": "Google Business: plus code QMW4+354, San Juan Opico",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GQMW4%2B354%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Copapayo",
+            "lat": 13.7456125,
+            "lng": -89.4627656,
+            "status": "Verificado",
+            "source": "Google Business: plus code PGWP+6VX, CA-8, Copapayo",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GPGWP%2B6VX%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto Ilobasco",
+            "lat": 13.8299375,
+            "lng": -88.8590156,
+            "status": "Verificado",
+            "source": "Google Business: plus code R4HR+X9H, carretera a Ilobasco",
+            "url": "https://www.google.com/maps/search/?api=1&query=765HR4HR%2BX9H%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto San Sebastián Salitrillo",
+            "lat": 13.9881375,
+            "lng": -89.6438906,
+            "status": "Verificado",
+            "source": "Google Business: plus code X9Q4+7C5, San Sebastián Salitrillo",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GX9Q4%2B7C5%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Tienda Pronto 24 Horas Ahuachapán",
+            "lat": 13.9557875,
+            "lng": -89.7925156,
+            "status": "Verificado",
+            "source": "Google Business: plus code X644+8X9, Ahuachapán",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GX644%2B8X9%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto UNO Independencia Sur",
+            "lat": 13.9789375,
+            "lng": -89.5605781,
+            "status": "Verificado",
+            "source": "Google Business: plus code XCHQ+HQF, Santa Ana",
+            "url": "https://www.google.com/maps/search/?api=1&query=765GXCHQ%2BHQF%20El%20Salvador"
+      },
+      {
+            "brand": "Pronto",
+            "name": "Pronto café UNO Zacatecoluca",
+            "lat": 13.4971625,
+            "lng": -88.8773906,
+            "status": "Verificado",
+            "source": "Google Business: plus code F4WF+V29, Zacatecoluca",
+            "url": "https://www.google.com/maps/search/?api=1&query=765HF4WF%2BV29%20El%20Salvador"
       }
-];
+    ];
 
     const PERIMETER_KM = 3;
     const PERIMETER_M = PERIMETER_KM * 1000;
@@ -3966,6 +4620,7 @@ const GRADE_LABEL = {
     let circles = new Map();
     let showRadius = true;
     let showCompetitors = true;
+    let priorityFilter = "ALL";
     let selectedId = null;
     let activeMapLayer = "comercio";
 
@@ -4193,11 +4848,79 @@ const GRADE_LABEL = {
       return "";
     }
 
+    function findStreetViewUrl(row) {
+      const preferred = getRowValueStrict(row, [
+        "link street view",
+        "street view",
+        "link streetview",
+        "streetview",
+        "url street view",
+        "enlace street view",
+        "link vista calle",
+        "vista calle",
+        "link street"
+      ]);
+      const s = String(preferred || "").trim();
+      if (/^https?:\/\//i.test(s)) return s;
+
+      const preferredHyperlink = getRowValueStrict(row, [
+        "link street view hyperlink",
+        "street view hyperlink",
+        "link streetview hyperlink",
+        "streetview hyperlink",
+        "url street view hyperlink",
+        "enlace street view hyperlink",
+        "link vista calle hyperlink",
+        "vista calle hyperlink",
+        "link street hyperlink"
+      ]);
+      const h = String(preferredHyperlink || "").trim();
+      if (/^https?:\/\//i.test(h)) return h;
+
+      for (const [key, value] of Object.entries(row || {})) {
+        const header = normalizeKey(key);
+        const raw = String(value || "").trim();
+        if (!raw) continue;
+        const headerLooksStreet = header.includes("streetview") || header.includes("street") || header.includes("vistacalle");
+        if (headerLooksStreet && /^https?:\/\//i.test(raw)) return raw;
+      }
+      return "";
+    }
+
     function normalizeGrade(value) {
       const s = String(value || "").trim().toUpperCase();
       if (s.startsWith("A")) return "A";
       if (s.startsWith("C")) return "C";
       return "B";
+    }
+
+    function normalizePriorityTN(value) {
+      const raw = String(value ?? "").trim();
+      if (!raw) return "";
+      const n = parseNumber(raw);
+      if (Number.isFinite(n)) {
+        if (Math.round(n) === 1) return "1";
+        if (Math.round(n) === 2) return "2";
+      }
+      const normalized = normalizeKey(raw);
+      if (normalized.includes("prioridad1") || normalized === "uno" || normalized === "primera") return "1";
+      if (normalized.includes("prioridad2") || normalized === "dos" || normalized === "segunda") return "2";
+      return "";
+    }
+
+    function priorityLabel(point) {
+      const p = String(point?.prioridadTN || "");
+      if (p === "1") return "Prioridad TN 1";
+      if (p === "2") return "Prioridad TN 2";
+      return "Sin prioridad TN";
+    }
+
+    function markerLabel(point) {
+      return point?.nota || "";
+    }
+
+    function markerColor(point) {
+      return COLORS[point?.nota] || COLORS.B;
     }
 
     function formatScore(value) {
@@ -4207,6 +4930,8 @@ const GRADE_LABEL = {
     }
 
     function streetViewUrl(point) {
+      const excelStreet = String(point?.streetView || "").trim();
+      if (/^https?:\/\//i.test(excelStreet)) return excelStreet;
       if (!point || !validLatLng(Number(point.lat), Number(point.lng))) return "#";
       return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${Number(point.lat).toFixed(6)},${Number(point.lng).toFixed(6)}`;
     }
@@ -4254,9 +4979,11 @@ const GRADE_LABEL = {
       const tipo = String(getRowValue(row, ["tipo", "clasificacion", "clasificación", "categoria", "categoría"]) || "N/D").trim();
       const defaultNota = normalizeGrade(getRowValue(row, ["evaluacion sitelo", "evaluación sitelo", "evaluacion", "evaluación", "nota", "calificacion", "calificación"]));
       const puntuacionSitelo = getRowValue(row, ["puntuacion sitelo", "puntuación sitelo", "puntuacion", "puntuación", "score sitelo", "score"]);
+      const prioridadTN = normalizePriorityTN(getRowValue(row, ["prioridad tn", "prioridad tienda nueva", "prioridad posible tienda nueva", "posible tiendas nuevas", "prioridad tn posible", "prioridad"]));
       const observacion = String(getRowValue(row, ["comentario", "observacion", "observación", "notas", "detalle"]) || "").trim();
       const sitelo = findSiteloUrl(row);
       const pdfSitelo = findPdfUrl(row);
+      const streetView = findStreetViewUrl(row);
       const googleFinal = google || `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
       const id = makePointId(nombre, lat, lng, index);
       const saved = edits[id] || {};
@@ -4270,10 +4997,12 @@ const GRADE_LABEL = {
         lng,
         defaultNota,
         puntuacionSitelo,
+        prioridadTN,
         observacion,
         nota: defaultNota || "B",
         sitelo: saved.sitelo || sitelo || "",
         pdfSitelo,
+        streetView,
         comentario: saved.comentario || observacion || ""
       };
     }
@@ -4390,6 +5119,8 @@ const GRADE_LABEL = {
       selectedId = points[0]?.id || null;
       document.getElementById("searchBox").value = "";
       document.getElementById("gradeFilter").value = "ALL";
+      priorityFilter = "ALL";
+      updatePriorityFilterUi();
       refreshAll(false);
       fitToPoints();
 
@@ -4397,8 +5128,9 @@ const GRADE_LABEL = {
       else renderNoSelection("No encontré coordenadas válidas en el Excel. Revisa que tenga columnas Latitud/Longitud, Coordenadas o links de Google Maps.");
 
       const pdfCount = points.filter(p => p.pdfSitelo).length;
+      const streetCount = points.filter(p => p.streetView).length;
       const status = points.length
-        ? `${sourceName}: ${points.length} punto(s) cargados con evaluación y puntuación Sitelo. ${pdfCount ? `${pdfCount} PDF(s) detectados.` : "Sin PDF detectado."} ${omitted ? `${omitted} fila(s) sin coordenadas fueron omitidas.` : "Todas las filas tenían coordenadas válidas."}`
+        ? `${sourceName}: ${points.length} punto(s) cargados con evaluación y puntuación Sitelo. ${pdfCount ? `${pdfCount} PDF(s) detectados.` : "Sin PDF detectado."} ${streetCount ? `${streetCount} Street View detectados.` : "Sin Street View detectado."} ${omitted ? `${omitted} fila(s) sin coordenadas fueron omitidas.` : "Todas las filas tenían coordenadas válidas."}`
         : `${sourceName}: no se pudieron cargar puntos válidos.`;
       statusFn(status, points.length ? (omitted ? "warn" : "ok") : "err");
     }
@@ -4506,17 +5238,30 @@ const GRADE_LABEL = {
       return deg * Math.PI / 180;
     }
 
+    function perimeterScopeLabel() {
+      if (priorityFilter === "1") return "Prioridad TN 1";
+      if (priorityFilter === "2") return "Prioridad TN 2";
+      return "todos los puntos";
+    }
+
+    function perimeterScopePoints(point) {
+      return points.filter(p =>
+        p.id !== point.id &&
+        Number.isFinite(p.lat) &&
+        Number.isFinite(p.lng) &&
+        (priorityFilter === "ALL" || String(p.prioridadTN || "") === priorityFilter)
+      );
+    }
+
     function nearestPoint(point) {
-      const candidates = points
-        .filter(p => p.id !== point.id && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+      const candidates = perimeterScopePoints(point)
         .map(p => ({ point: p, km: haversineKm(point, p) }))
         .sort((a, b) => a.km - b.km);
       return candidates[0] || null;
     }
 
     function pointsWithin3Km(point) {
-      return points
-        .filter(p => p.id !== point.id && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+      return perimeterScopePoints(point)
         .map(p => ({ point: p, km: haversineKm(point, p) }))
         .filter(x => x.km <= PERIMETER_KM)
         .sort((a, b) => a.km - b.km);
@@ -4634,11 +5379,15 @@ const GRADE_LABEL = {
       updateMapInsightLegend();
     }
 
-    function insightLegendHtml() {
+    function insightLegendContentHtml() {
       const def = MAP_LAYER_DEFS[activeMapLayer] || MAP_LAYER_DEFS.comercio;
       if (activeMapLayer === "vidaNocturna") return `<b>${escapeHTML(def.label)}</b><div>${escapeHTML(def.help)}</div><div class="legend-line"><span class="swatch-dot" style="background:#A855F7"></span>Actividad muy alta</div><div class="legend-line"><span class="swatch-dot" style="background:#F97316"></span>Actividad alta / media-alta</div>`;
       if (activeMapLayer === "poblacion") return `<b>${escapeHTML(def.label)}</b><div>${escapeHTML(def.help)}</div><div class="legend-line"><span class="swatch-dot" style="background:#1D4ED8"></span>Masa residencial muy alta</div><div class="legend-line"><span class="swatch-dot" style="background:#2563EB"></span>Masa residencial alta</div><div class="legend-line"><span class="swatch-dot" style="background:#60A5FA"></span>Masa residencial media-alta</div>`;
       return `<b>${escapeHTML(def.label)}</b><div>${escapeHTML(def.help || "Mapa base de referencia.")}</div>`;
+    }
+
+    function insightLegendHtml() {
+      return `<button class="map-insight-toggle" type="button" aria-label="Mostrar lectura del mapa" title="Mostrar lectura del mapa">Info</button><div class="map-insight-content">${insightLegendContentHtml()}</div>`;
     }
 
     function addMapInsightLegendControl() {
@@ -4650,6 +5399,11 @@ const GRADE_LABEL = {
           L.DomEvent.disableClickPropagation(container);
           L.DomEvent.disableScrollPropagation(container);
           container.innerHTML = insightLegendHtml();
+          container.addEventListener("click", (event) => {
+            const toggle = event.target.closest(".map-insight-toggle");
+            if (!toggle) return;
+            container.classList.toggle("is-open");
+          });
           return container;
         }
       });
@@ -4659,7 +5413,10 @@ const GRADE_LABEL = {
 
     function updateMapInsightLegend() {
       const container = document.querySelector(".map-insight-legend");
-      if (container) container.innerHTML = insightLegendHtml();
+      if (!container) return;
+      const content = container.querySelector(".map-insight-content");
+      if (content) content.innerHTML = insightLegendContentHtml();
+      else container.innerHTML = insightLegendHtml();
     }
 
     function updateMapLayerUi() {
@@ -4742,9 +5499,10 @@ const GRADE_LABEL = {
     }
 
     function markerIcon(point) {
+      const priorityClass = point.prioridadTN === "2" ? "priority-2" : (point.prioridadTN === "1" ? "priority-1" : "");
       return L.divIcon({
         className: "ampm-div-icon",
-        html: `<div class="marker-pin ${point.nota} ${point.id === selectedId ? "selected" : ""}" style="background:${COLORS[point.nota]}"><span>${escapeHTML(point.nota)}</span></div>`,
+        html: `<div class="marker-pin ${point.nota} ${priorityClass} ${point.id === selectedId ? "selected" : ""}" style="background:${markerColor(point)}"><span>${escapeHTML(markerLabel(point))}</span></div>`,
         iconSize: [34, 42],
         iconAnchor: [16, 34],
         popupAnchor: [2, -32]
@@ -4759,9 +5517,10 @@ const GRADE_LABEL = {
         : `<span class="btn secondary disabled" aria-disabled="true">Sin PDF Drive</span>`;
       const alertClass = nearby.length ? "zone-alert" : "safe-alert";
       const alertTitle = nearby.length ? "⚠ Alerta de zona" : "✓ Sin alerta de zona";
+      const scopeLabel = perimeterScopeLabel();
       const alertDetail = nearby.length
-        ? `Este punto cae dentro del perímetro de ${PERIMETER_KM} km de ${nearby.length} punto(s): ${nearby.slice(0, 5).map(x => `${escapeHTML(x.point.nombre)} (${x.km.toFixed(2)} km)`).join(" · ")}${nearby.length > 5 ? " · ..." : ""}.`
-        : `No hay otros puntos dentro del perímetro operativo de ${PERIMETER_KM} km.`;
+        ? `Este punto cae dentro del perímetro de ${PERIMETER_KM} km de ${nearby.length} punto(s) según filtro actual (${escapeHTML(scopeLabel)}): ${nearby.slice(0, 5).map(x => `${escapeHTML(x.point.nombre)} (${x.km.toFixed(2)} km)`).join(" · ")}${nearby.length > 5 ? " · ..." : ""}.`
+        : `No hay otros puntos dentro del perímetro operativo de ${PERIMETER_KM} km según filtro actual (${escapeHTML(scopeLabel)}).`;
 
       return `
         <div class="popup">
@@ -4769,6 +5528,7 @@ const GRADE_LABEL = {
           <p><b>Coordenadas:</b> ${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}</p>
           <p><b>Evaluación Sitelo:</b> <span style="color:${COLORS[point.nota]};font-weight:900">${escapeHTML(GRADE_LABEL[point.nota])}</span></p>
           <p><b>Puntuación Sitelo:</b> <span style="font-weight:900;color:var(--ampm-dark)">${formatScore(point.puntuacionSitelo)}</span></p>
+          <p><b>Prioridad TN:</b> <span class="priority-pill ${point.prioridadTN === "2" ? "p2" : ""}">${escapeHTML(priorityLabel(point))}</span></p>
           <span class="distance-pill">Radio visible: punto seleccionado · ${PERIMETER_KM} km</span>
           <div class="${alertClass}"><b>${alertTitle}:</b> ${alertDetail}</div>
           ${nearest ? `<p><b>Más cercano:</b> ${escapeHTML(nearest.point.nombre)} · ${nearest.km.toFixed(2)} km</p>` : ""}
@@ -4841,20 +5601,40 @@ const GRADE_LABEL = {
     }
 
     function updateCompetitorFilterCounts() {
-      const totals = COMPETITOR_POINTS.reduce((acc, p) => {
+      const geoTotals = COMPETITOR_POINTS.reduce((acc, p) => {
         acc[p.brand] = (acc[p.brand] || 0) + 1;
         return acc;
       }, {});
 
       document.querySelectorAll("[data-brand-count]").forEach(el => {
         const brand = el.getAttribute("data-brand-count");
-        el.textContent = totals[brand] || 0;
+        const audit = COMPETITOR_AUDIT_COUNTS[brand];
+        const geo = geoTotals[brand] || 0;
+        el.textContent = audit?.label || geo || 0;
+        el.title = `${audit?.basis || "Conteo desde pines"} · ${geo} pines georreferenciados en mapa`;
       });
 
       document.querySelectorAll("#competitorBrandFilter label").forEach(label => {
         const input = label.querySelector("input[type='checkbox']");
         label.classList.toggle("is-active", !!input?.checked);
       });
+
+      const selectedBrands = getSelectedCompetitorBrands();
+      const visiblePins = showCompetitors
+        ? COMPETITOR_POINTS.filter(p => selectedBrands.includes(p.brand) && validLatLng(p.lat, p.lng)).length
+        : 0;
+      const reviewPins = showCompetitors
+        ? COMPETITOR_POINTS.filter(p => selectedBrands.includes(p.brand) && validLatLng(p.lat, p.lng) && !String(p.status || "").toLowerCase().includes("verificado")).length
+        : 0;
+      const countEl = document.getElementById("competitorCount");
+      if (countEl) countEl.textContent = `${visiblePins} pines`;
+
+      const noteEl = document.getElementById("competitorAuditNote");
+      if (noteEl) {
+        noteEl.textContent = selectedBrands.length
+          ? `Pines georreferenciados visibles: ${visiblePins}. En revisión: ${reviewPins}. No se muestran totales país sin coordenada exacta.`
+          : "Sin marcas seleccionadas. Activa una marca para ver pines reales georreferenciados.";
+      }
     }
 
     function getFilteredCompetitors() {
@@ -4891,19 +5671,40 @@ function renderCompetitorObjects() {
 
         const circle = L.circle([point.lat, point.lng], {
           radius: PERIMETER_M,
-          color: COLORS[point.nota],
+          color: "#38BDF8",
           weight: 2,
-          opacity: 0.42,
-          fillColor: COLORS[point.nota],
-          fillOpacity: 0.07,
+          opacity: 0.58,
+          fillColor: "#BAE6FD",
+          fillOpacity: 0.10,
           interactive: false
         });
         circles.set(point.id, circle);
-        if (showRadius && point.id === selectedId) circlesLayer.addLayer(circle);
+        if (showRadius && point.id === selectedId) {
+          circlesLayer.addLayer(circle);
+          circlesLayer.addLayer(L.circleMarker([point.lat, point.lng], {
+            radius: 21,
+            color: "#11284A",
+            weight: 3,
+            opacity: 0.88,
+            fillColor: "#38BDF8",
+            fillOpacity: 0.16,
+            interactive: false
+          }));
+          circlesLayer.addLayer(L.circleMarker([point.lat, point.lng], {
+            radius: 7,
+            color: "#FFFFFF",
+            weight: 2,
+            opacity: 0.95,
+            fillColor: "#11284A",
+            fillOpacity: 0.92,
+            interactive: false
+          }));
+        }
 
         const marker = L.marker([point.lat, point.lng], {
           icon: markerIcon(point),
-          riseOnHover: true
+          riseOnHover: true,
+          zIndexOffset: point.id === selectedId ? 1200 : 420
         })
         .bindPopup(popupHtml(point), { maxWidth: 315 })
         .bindTooltip(escapeHTML(point.nombre), {
@@ -4924,8 +5725,9 @@ function renderCompetitorObjects() {
       const term = document.getElementById("searchBox").value.trim().toLowerCase();
       const grade = document.getElementById("gradeFilter").value;
       return points.filter(p => {
-        const text = `${p.nombre} ${p.tipo} ${p.lat} ${p.lng} ${p.nota} ${p.puntuacionSitelo ?? ""} ${p.comentario} ${p.sitelo}`.toLowerCase();
-        return (grade === "ALL" || p.nota === grade) && (!term || text.includes(term));
+        const text = `${p.nombre} ${p.tipo} ${p.lat} ${p.lng} ${p.nota} ${p.puntuacionSitelo ?? ""} ${p.prioridadTN ?? ""} ${priorityLabel(p)} ${p.comentario} ${p.sitelo}`.toLowerCase();
+        const matchesPriority = priorityFilter === "ALL" || String(p.prioridadTN || "") === priorityFilter;
+        return (grade === "ALL" || p.nota === grade) && matchesPriority && (!term || text.includes(term));
       });
     }
 
@@ -4952,6 +5754,7 @@ function renderCompetitorObjects() {
         tr.innerHTML = `
           <td>
             <div class="name-cell">${escapeHTML(point.nombre)}</div>
+            ${point.prioridadTN ? `<span class="priority-pill ${point.prioridadTN === "2" ? "p2" : ""}">${escapeHTML(priorityLabel(point))}</span>` : ""}
             <div class="small">${Number(point.lat).toFixed(5)}, ${Number(point.lng).toFixed(5)}</div>
           </td>
           <td>
@@ -5000,7 +5803,7 @@ function renderCompetitorObjects() {
 
     function renderSelected(point) {
       document.getElementById("selectedName").textContent = point.nombre;
-      document.getElementById("selectedMeta").textContent = `${point.lat.toFixed(6)}, ${point.lng.toFixed(6)}`;
+      document.getElementById("selectedMeta").textContent = `${point.lat.toFixed(6)}, ${point.lng.toFixed(6)} · ${priorityLabel(point)}`;
       const badge = document.getElementById("selectedBadge");
       badge.textContent = point.nota;
       badge.className = `badge ${point.nota}`;
@@ -5047,9 +5850,10 @@ function renderCompetitorObjects() {
       const nearestHtml = nearest
         ? `<div class="small" style="margin-top:7px">Punto más cercano: <b>${escapeHTML(nearest.point.nombre)}</b> a <b>${nearest.km.toFixed(2)} km</b>.</div>`
         : `<div class="small" style="margin-top:7px">No hay suficientes puntos para calcular cercanía.</div>`;
+      const scopeLabel = perimeterScopeLabel();
       document.getElementById("nearbyInfo").innerHTML = nearby.length
-        ? `<div class="zone-alert"><b>⚠ Alerta operativa:</b> este punto cae dentro del perímetro de ${PERIMETER_KM} km de ${nearby.length} punto(s).${nearbyRows ? `<div class="nearby-list">${nearbyRows}</div>` : ""}</div>${nearestHtml}`
-        : `<div class="safe-alert"><b>✓ Sin alerta operativa:</b> este punto no cae dentro del perímetro de ${PERIMETER_KM} km de otros puntos.</div>${nearestHtml}`;
+        ? `<div class="zone-alert"><b>⚠ Alerta operativa:</b> este punto cae dentro del perímetro de ${PERIMETER_KM} km de ${nearby.length} punto(s), usando el filtro actual: <b>${escapeHTML(scopeLabel)}</b>.${nearbyRows ? `<div class="nearby-list">${nearbyRows}</div>` : ""}</div>${nearestHtml}`
+        : `<div class="safe-alert"><b>✓ Sin alerta operativa:</b> este punto no cae dentro del perímetro de ${PERIMETER_KM} km de otros puntos, usando el filtro actual: <b>${escapeHTML(scopeLabel)}</b>.</div>${nearestHtml}`;
     }
 
     function renderNoSelection(message = "Sube el Excel y selecciona un punto para ver la evaluación Sitelo.") {
@@ -5095,11 +5899,33 @@ function renderCompetitorObjects() {
       refreshAll(false);
     }
 
+    function updatePriorityFilterUi() {
+      const total = points.length;
+      const p1 = points.filter(p => p.prioridadTN === "1").length;
+      const p2 = points.filter(p => p.prioridadTN === "2").length;
+      document.querySelectorAll("[data-priority-filter]").forEach(btn => {
+        const value = btn.dataset.priorityFilter || "ALL";
+        btn.classList.toggle("active", value === priorityFilter);
+        if (value === "ALL") btn.textContent = `Todos (${total})`;
+        if (value === "1") btn.textContent = `Prioridad 1 (${p1})`;
+        if (value === "2") btn.textContent = `Prioridad 2 (${p2})`;
+      });
+      const summary = document.getElementById("priorityFilterSummary");
+      if (summary) {
+        summary.textContent = priorityFilter === "1"
+          ? `Mostrando ${p1} punto(s) prioridad 1`
+          : priorityFilter === "2"
+            ? `Mostrando ${p2} punto(s) prioridad 2`
+            : `Todos los puntos · P1: ${p1} · P2: ${p2}`;
+      }
+    }
+
     function renderKpis() {
       document.getElementById("kpiTotal").textContent = points.length;
       document.getElementById("kpiA").textContent = points.filter(p => p.nota === "A").length;
       document.getElementById("kpiB").textContent = points.filter(p => p.nota === "B").length;
       document.getElementById("kpiC").textContent = points.filter(p => p.nota === "C").length;
+      updatePriorityFilterUi();
     }
 
     function refreshAll(keepPopup = true) {
@@ -5127,7 +5953,7 @@ function renderCompetitorObjects() {
         alert("Primero sube un Excel con puntos válidos para exportar la evaluación.");
         return;
       }
-      const headers = ["id","punto","tipo_excel","latitud","longitud","evaluacion_sitelo","puntuacion_sitelo","link_google_maps","link_street_view","link_pdf_sitelo","link_sitelo","comentario","punto_mas_cercano","distancia_mas_cercana_km","puntos_dentro_3km"];
+      const headers = ["id","punto","tipo_excel","latitud","longitud","prioridad_tn","evaluacion_sitelo","puntuacion_sitelo","link_google_maps","link_street_view","link_pdf_sitelo","link_sitelo","comentario","punto_mas_cercano","distancia_mas_cercana_km","puntos_dentro_3km"];
       const rows = points.map(p => {
         const nearest = nearestPoint(p);
         const nearby = pointsWithin3Km(p);
@@ -5137,6 +5963,7 @@ function renderCompetitorObjects() {
           p.tipo || "",
           p.lat,
           p.lng,
+          p.prioridadTN || "",
           p.nota,
           formatScore(p.puntuacionSitelo),
           p.google || "",
@@ -5428,15 +6255,76 @@ const symbolList = document.getElementById("layoutSymbolList");
       URL.revokeObjectURL(url);
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+
+    function showMapInitError(error) {
+      console.error("No se pudo inicializar el mapa:", error);
+      const mapEl = document.getElementById("map");
+      if (mapEl) {
+        const detail = error && error.message ? ` Detalle técnico: ${escapeHTML(error.message)}` : "";
+        mapEl.innerHTML = `<div class="empty" style="padding:28px">No se pudo inicializar el mapa. Se intentó cargar Leaflet desde varios CDN.${detail}</div>`;
+      }
+    }
+
+    function loadScriptOnce(src) {
+      return new Promise((resolve, reject) => {
+        if (window.L && typeof L.map === "function") return resolve();
+        const existing = Array.from(document.scripts || []).find(s => s.src === src);
+        if (existing && existing.dataset.loaded === "1") return resolve();
+        const script = existing || document.createElement("script");
+        script.src = src;
+        script.async = false;
+        script.onload = () => { script.dataset.loaded = "1"; resolve(); };
+        script.onerror = () => reject(new Error(`No cargó ${src}`));
+        if (!existing) document.head.appendChild(script);
+      });
+    }
+
+    async function ensureLeafletReady() {
+      if (window.L && typeof L.map === "function") return;
+      const sources = [
+        "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js",
+        "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      ];
+      let lastError = null;
+      for (const src of sources) {
+        try {
+          await loadScriptOnce(src);
+          if (window.L && typeof L.map === "function") return;
+        } catch (err) {
+          lastError = err;
+        }
+      }
+      throw lastError || new Error("Leaflet no quedó disponible.");
+    }
+
+    function setupSidebarToggle() {
+      const layout = document.getElementById("mapLayout");
+      const toggleBtn = document.getElementById("sidebarToggleBtn");
+      if (!layout || !toggleBtn) return;
+
+      const applySidebarState = (collapsed) => {
+        layout.classList.toggle("sidebar-collapsed", collapsed);
+        toggleBtn.innerHTML = collapsed ? "‹" : "›";
+        toggleBtn.setAttribute("aria-expanded", String(!collapsed));
+        toggleBtn.setAttribute("aria-label", collapsed ? "Expandir panel lateral" : "Contraer panel lateral");
+        toggleBtn.title = collapsed ? "Expandir panel lateral" : "Contraer panel lateral";
+        setTimeout(() => map?.invalidateSize(), 260);
+      };
+
+      toggleBtn.addEventListener("click", () => {
+        const collapsed = !layout.classList.contains("sidebar-collapsed");
+        applySidebarState(collapsed);
+      });
+
+      applySidebarState(false);
+    }
+    document.addEventListener("DOMContentLoaded", async () => {
       try {
+        await ensureLeafletReady();
         initMap();
       } catch (error) {
-        console.error("No se pudo inicializar el mapa:", error);
-        const mapEl = document.getElementById("map");
-        if (mapEl) {
-          mapEl.innerHTML = '<div class="empty" style="padding:28px">No se pudo inicializar el mapa. Revisa conexión a internet para cargar Leaflet.</div>';
-        }
+        showMapInitError(error);
       }
       updateCompetitorFilterCounts();
       renderKpis();
@@ -5445,6 +6333,7 @@ const symbolList = document.getElementById("layoutSymbolList");
       renderCapexTab();
       bindLayoutModal();
       switchMainTab("mapa");
+      setupSidebarToggle();
 
       document.querySelectorAll(".tab-button").forEach(btn => {
         btn.addEventListener("click", () => switchMainTab(btn.dataset.tab));
@@ -5486,6 +6375,21 @@ document.getElementById("loadCubeBtn").addEventListener("click", handleCubeUrl);
         renderTable();
       });
 
+      document.querySelectorAll("[data-priority-filter]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          priorityFilter = btn.dataset.priorityFilter || "ALL";
+          updatePriorityFilterUi();
+          const visible = getFilteredPoints();
+          if (selectedId && !visible.some(p => p.id === selectedId)) {
+            selectedId = visible[0]?.id || null;
+          }
+          renderMapObjects();
+          renderTable();
+          if (selectedId) renderSelected(points.find(p => p.id === selectedId));
+          else renderNoSelection("No hay puntos con ese filtro de Prioridad TN.");
+        });
+      });
+
 
       document.querySelectorAll("[data-map-layer]").forEach(btn => {
         btn.addEventListener("click", () => setBaseMapLayer(btn.dataset.mapLayer));
@@ -5499,12 +6403,14 @@ document.getElementById("loadCubeBtn").addEventListener("click", handleCubeUrl);
       document.getElementById("showAllCompetitorsBtn").addEventListener("click", () => {
         showCompetitors = true;
         setAllCompetitorBrands(true);
+        updateCompetitorFilterCounts();
         renderCompetitorObjects();
       });
 
       document.getElementById("hideAllCompetitorsBtn").addEventListener("click", () => {
         showCompetitors = false;
         setAllCompetitorBrands(false);
+        updateCompetitorFilterCounts();
         renderCompetitorObjects();
       });
 
