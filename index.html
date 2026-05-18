@@ -2477,7 +2477,7 @@
           <img class="logo" src="https://i.postimg.cc/W3cDbZ6k/Logo-Colores-Transparente.png" alt="AMPM" referrerpolicy="no-referrer" />
           <div>
             <h1>Mapa de expansión y evaluación de puntos</h1>
-            <div class="subtitle">Carga puntos desde cubo publicado · evaluación Sitelo fija · competencia visible · perímetro 3 km · CAPEX y layout 80 m²</div>
+            <div class="subtitle">Carga puntos desde cubo publicado · evaluación Sitelo fija · competencia opcional · perímetro 3 km · CAPEX y layout 80 m²</div>
           </div>
         </div>
 
@@ -2576,7 +2576,7 @@
                 <div class="competitor-title">Mostrar competencia</div>
                 <div class="competitor-subtitle">Pines exactos georreferenciados</div>
               </div>
-              <div id="competitorCount" class="competitor-total">142 pines</div>
+              <div id="competitorCount" class="competitor-total">0 pines</div>
             </div>
 
             <div class="competitor-actions">
@@ -2585,12 +2585,12 @@
             </div>
 
             <div class="competitor-multi" id="competitorBrandFilter" aria-label="Filtrar una o varias competencias">
-              <label><input type="checkbox" value="Road Market" checked /><span class="brand-dot" style="background:#7C3AED"></span><span class="brand-name">Road Market</span><strong class="brand-count" data-brand-count="Road Market">40</strong></label>
-              <label><input type="checkbox" value="TenGo" checked /><span class="brand-dot" style="background:#0EA5E9"></span><span class="brand-name">TenGo</span><strong class="brand-count" data-brand-count="TenGo">6</strong></label>
-              <label><input type="checkbox" value="Super 7" checked /><span class="brand-dot" style="background:#16A34A"></span><span class="brand-name">Super 7</span><strong class="brand-count" data-brand-count="Super 7">60</strong></label>
-              <label><input type="checkbox" value="Pronto" checked /><span class="brand-dot" style="background:#DC2626"></span><span class="brand-name">Pronto</span><strong class="brand-count" data-brand-count="Pronto">21</strong></label>
-              <label><input type="checkbox" value="StarMart" checked /><span class="brand-dot" style="background:#111827"></span><span class="brand-name">StarMart</span><strong class="brand-count" data-brand-count="StarMart">9</strong></label>
-              <label><input type="checkbox" value="Shell Café" checked /><span class="brand-dot" style="background:#F4B400"></span><span class="brand-name">Shell Café</span><strong class="brand-count" data-brand-count="Shell Café">6</strong></label>
+              <label><input type="checkbox" value="Road Market" /><span class="brand-dot" style="background:#7C3AED"></span><span class="brand-name">Road Market</span><strong class="brand-count" data-brand-count="Road Market">40</strong></label>
+              <label><input type="checkbox" value="TenGo" /><span class="brand-dot" style="background:#0EA5E9"></span><span class="brand-name">TenGo</span><strong class="brand-count" data-brand-count="TenGo">6</strong></label>
+              <label><input type="checkbox" value="Super 7" /><span class="brand-dot" style="background:#16A34A"></span><span class="brand-name">Super 7</span><strong class="brand-count" data-brand-count="Super 7">60</strong></label>
+              <label><input type="checkbox" value="Pronto" /><span class="brand-dot" style="background:#DC2626"></span><span class="brand-name">Pronto</span><strong class="brand-count" data-brand-count="Pronto">21</strong></label>
+              <label><input type="checkbox" value="StarMart" /><span class="brand-dot" style="background:#111827"></span><span class="brand-name">StarMart</span><strong class="brand-count" data-brand-count="StarMart">9</strong></label>
+              <label><input type="checkbox" value="Shell Café" /><span class="brand-dot" style="background:#F4B400"></span><span class="brand-name">Shell Café</span><strong class="brand-count" data-brand-count="Shell Café">6</strong></label>
             </div>
             <div id="competitorAuditNote" class="source-note">Capa ajustada: Pronto fue revisado uno a uno con georreferencia. El número de cada marca representa pines visibles en el mapa.</div>
           </div>
@@ -2599,7 +2599,7 @@
             <button id="toggleRadiusBtn" class="secondary" type="button">Ocultar perímetro seleccionado 3 km</button>
             <button id="exportBtn" class="orange" type="button">Exportar evaluación CSV</button>
           </div>
-          <div class="hint">Primero sube el Excel. Cada pin mostrará su nombre, evaluación Sitelo, puntuación y PDF; al hacer clic se muestra solo su perímetro de 3 km y la alerta si cae en zona de otro punto.</div>
+          <div class="hint">Primero sube el Excel. Cada pin mostrará su nombre, evaluación Sitelo, puntuación y PDF; con un clic se selecciona el punto y con doble clic se oculta la circunferencia de 3 km.</div>
         </section>
 
         <section class="card selected-card" id="selectedCard">
@@ -4631,10 +4631,13 @@ const GRADE_LABEL = {
     let markers = new Map();
     let circles = new Map();
     let showRadius = true;
-    let showCompetitors = true;
+    let showCompetitors = false;
     let priorityFilter = "ALL";
     let selectedId = null;
     let activeMapLayer = "comercio";
+    let pointClickTimer = null;
+    let pointClickLastId = null;
+    const POINT_DBLCLICK_MS = 260;
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, ch => ({
@@ -5490,7 +5493,8 @@ const GRADE_LABEL = {
     function initMap() {
       map = L.map("map", {
         zoomControl: true,
-        preferCanvas: true
+        preferCanvas: true,
+        doubleClickZoom: false
       });
 
       setBaseMapLayer(activeMapLayer);
@@ -5541,7 +5545,7 @@ const GRADE_LABEL = {
           <p><b>Evaluación Sitelo:</b> <span style="color:${COLORS[point.nota]};font-weight:900">${escapeHTML(GRADE_LABEL[point.nota])}</span></p>
           <p><b>Puntuación Sitelo:</b> <span style="font-weight:900;color:var(--ampm-dark)">${formatScore(point.puntuacionSitelo)}</span></p>
           <p><b>Prioridad TN:</b> <span class="priority-pill ${point.prioridadTN === "2" ? "p2" : ""}">${escapeHTML(priorityLabel(point))}</span></p>
-          <span class="distance-pill">Radio visible: punto seleccionado · ${PERIMETER_KM} km</span>
+          <span class="distance-pill">Radio visible: punto seleccionado · ${PERIMETER_KM} km · doble clic oculta · clic activa</span>
           <div class="${alertClass}"><b>${alertTitle}:</b> ${alertDetail}</div>
           ${nearest ? `<p><b>Más cercano:</b> ${escapeHTML(nearest.point.nombre)} · ${nearest.km.toFixed(2)} km</p>` : ""}
           ${point.comentario ? `<p><b>Comentario:</b> ${escapeHTML(point.comentario)}</p>` : ""}
@@ -5672,6 +5676,64 @@ function renderCompetitorObjects() {
       });
     }
 
+    function updateRadiusButtonText() {
+      const btn = document.getElementById("toggleRadiusBtn");
+      if (btn) btn.textContent = showRadius ? "Ocultar perímetro seleccionado 3 km" : "Mostrar perímetro seleccionado 3 km";
+    }
+
+    function setRadiusVisibility(visible, shouldRender = true) {
+      showRadius = !!visible;
+      updateRadiusButtonText();
+      if (shouldRender) renderMapObjects();
+    }
+
+    function stopPointEvent(event) {
+      const original = event?.originalEvent || event;
+      if (event?.originalEvent && window.L?.DomEvent) {
+        L.DomEvent.stop(event.originalEvent);
+        return;
+      }
+      if (original) {
+        original.preventDefault?.();
+        original.stopPropagation?.();
+      }
+    }
+
+    function clearPointClickTimer() {
+      if (pointClickTimer) clearTimeout(pointClickTimer);
+      pointClickTimer = null;
+      pointClickLastId = null;
+    }
+
+    function applyPointDoubleClick(point, event) {
+      stopPointEvent(event);
+      clearPointClickTimer();
+      selectedId = point.id;
+      renderSelected(point);
+      setRadiusVisibility(false, true);
+      renderTable();
+      const marker = markers.get(point.id);
+      if (marker) {
+        marker.setPopupContent(popupHtml(point));
+        marker.openPopup();
+      }
+    }
+
+    function handlePointActivation(point, event, fly = false) {
+      stopPointEvent(event);
+      if (pointClickTimer && pointClickLastId === point.id) {
+        applyPointDoubleClick(point, event);
+        return;
+      }
+      clearPointClickTimer();
+      pointClickLastId = point.id;
+      pointClickTimer = setTimeout(() => {
+        pointClickTimer = null;
+        pointClickLastId = null;
+        selectPoint(point.id, fly);
+      }, POINT_DBLCLICK_MS);
+    }
+
     function renderMapObjects() {
       markersLayer.clearLayers();
       circlesLayer.clearLayers();
@@ -5726,7 +5788,8 @@ function renderCompetitorObjects() {
           className: "point-label",
           opacity: 0.96
         })
-        .on("click", () => selectPoint(point.id, false));
+        .on("click", (event) => handlePointActivation(point, event, false))
+        .on("dblclick", (event) => applyPointDoubleClick(point, event));
 
         markers.set(point.id, marker);
         markersLayer.addLayer(marker);
@@ -5786,7 +5849,12 @@ function renderCompetitorObjects() {
 
         tr.addEventListener("click", (e) => {
           if (e.target.closest("a,button,select,input,textarea")) return;
-          selectPoint(point.id, true);
+          handlePointActivation(point, e, true);
+        });
+
+        tr.addEventListener("dblclick", (e) => {
+          if (e.target.closest("a,button,select,input,textarea")) return;
+          applyPointDoubleClick(point, e);
         });
 
         tbody.appendChild(tr);
@@ -5798,6 +5866,8 @@ function renderCompetitorObjects() {
       const point = points.find(p => p.id === id);
       if (!point) return;
       selectedId = id;
+      showRadius = true;
+      updateRadiusButtonText();
       renderSelected(point);
       renderMapObjects();
       renderTable();
@@ -6332,6 +6402,8 @@ const symbolList = document.getElementById("layoutSymbolList");
       applySidebarState(false);
     }
     document.addEventListener("DOMContentLoaded", async () => {
+      showCompetitors = false;
+      setAllCompetitorBrands(false);
       try {
         await ensureLeafletReady();
         initMap();
@@ -6435,9 +6507,7 @@ document.getElementById("loadCubeBtn").addEventListener("click", handleCubeUrl);
       });
 
       document.getElementById("toggleRadiusBtn").addEventListener("click", () => {
-        showRadius = !showRadius;
-        document.getElementById("toggleRadiusBtn").textContent = showRadius ? "Ocultar perímetro seleccionado 3 km" : "Mostrar perímetro seleccionado 3 km";
-        renderMapObjects();
+        setRadiusVisibility(!showRadius, true);
       });
 
       document.getElementById("exportBtn").addEventListener("click", exportCsv);
